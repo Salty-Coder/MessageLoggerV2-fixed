@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.1.3
+ * @version 2.1.4
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -43,7 +43,7 @@ module.exports = class MessageLoggerV2 {
   }
   getVersion() {
 	this.alreadyTestedForUpdate = false;
-    return '2.1.3';
+    return '2.1.4';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
@@ -195,6 +195,7 @@ module.exports = class MessageLoggerV2 {
 	setTimeout(() => {
 		if (customUpdate && !this.alreadyTestedForUpdate)
 		{
+			this.alreadyTestedForUpdate = true;
 			const fs = require('fs');
 			const https = require('https');
 
@@ -211,7 +212,6 @@ module.exports = class MessageLoggerV2 {
 				chunks.push(chunk);
 			  });
 			  res.on('end', (r) => {
-				this.alreadyTestedForUpdate = true;
 				if (r.statusCode > 399)
 				{
 					XenoLib.Notifications.error("[" + this.getName() + "] Bad response from Github, code: " + r.statusCode);
