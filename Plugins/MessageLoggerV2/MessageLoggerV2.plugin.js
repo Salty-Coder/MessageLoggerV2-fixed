@@ -2522,20 +2522,57 @@ module.exports = class MessageLoggerV2 {
     return record.message;
   }
   cacheImage(url, attachmentIdx, attachmentId, messageId, channelId, attempts = 0) {
-    this.nodeModules.request({ url: url, encoding: null, headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9002 Chrome/83.0.4103.122 Electron/9.3.5 Safari/537.36' } }, (err, res, buffer) => {
-      try {
-        if (err || res.statusCode != 200) {
-          if (res.statusCode == 404 || res.statusCode == 403) return;
-          attempts++;
-          if (attempts > 3) return ZeresPluginLibrary.Logger.warn(this.getName(), `Failed to get image ${attachmentId} for caching, error code ${res.statusCode}`);
-          return setTimeout(() => this.cacheImage(url, attachmentIdx, attachmentId, messageId, channelId, attempts), 1000);
-        }
-        const fileExtension = url.match(/\.[0-9a-z]+$/i)[0];
-        this.nodeModules.fs.writeFileSync(this.settings.imageCacheDir + `/${attachmentId}${fileExtension}`, buffer, { encoding: null });
-      } catch (err) {
-        console.error('Failed to save image cache', err.message);
-      }
-    });
+    // this.nodeModules.request({ url: url, encoding: null, headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9002 Chrome/83.0.4103.122 Electron/9.3.5 Safari/537.36' } }, (err, res, buffer) => {
+      // try {
+        // if (err || res.statusCode != 200) {
+          // if (res.statusCode == 404 || res.statusCode == 403) return;
+          // attempts++;
+          // if (attempts > 3) return ZeresPluginLibrary.Logger.warn(this.getName(), `Failed to get image ${attachmentId} for caching, error code ${res.statusCode}`);
+          // return setTimeout(() => this.cacheImage(url, attachmentIdx, attachmentId, messageId, channelId, attempts), 1000);
+        // }
+        // const fileExtension = url.match(/\.[0-9a-z]+$/i)[0];
+        // this.nodeModules.fs.writeFileSync(this.settings.imageCacheDir + `/${attachmentId}${fileExtension}`, buffer, { encoding: null });
+      // } catch (err) {
+        // console.error('Failed to save image cache', err.message);
+      // }
+    // });
+	let chunks = [];
+	require("https").get(url, {}, (eventListener) => {
+			eventListener.on("data", (data) => {
+				chunks.push(data);	
+			});
+			eventListener.on("end", (data) => {
+				let finalData = Buffer.concat(chunks);
+
+				const uint8Array = Uint8Array.from(finalData);
+				const textDecoder = new TextDecoder();
+				const responseString = textDecoder.decode(uint8Array);
+				
+				if (responseString == "")
+				{
+					attempts++;
+					if (attempts > 3) return ZeresPluginLibrary.Logger.warn(this.getName(), `Failed to get image ${attachmentId} for caching, error code ${res.statusCode}`);
+					return setTimeout(() => this.cacheImage(url, attachmentIdx, attachmentId, messageId, channelId, attempts), 1000);
+				}
+				
+				const fileExtension = url.match(/\.[0-9a-z]+$/i)[0];
+				require("fs").writeFileSync(this.settings.imageCacheDir + `/${attachmentId}${fileExtension}`, finalData, { encoding: null });
+			});
+	});
+	// {
+      // try {
+        // if (err || res.statusCode != 200) {
+          // if (res.statusCode == 404 || res.statusCode == 403) return;
+          // attempts++;
+          // if (attempts > 3) return ZeresPluginLibrary.Logger.warn(this.getName(), `Failed to get image ${attachmentId} for caching, error code ${res.statusCode}`);
+          // return setTimeout(() => this.cacheImage(url, attachmentIdx, attachmentId, messageId, channelId, attempts), 1000);
+        // }
+        // const fileExtension = url.match(/\.[0-9a-z]+$/i)[0];
+        // this.nodeModules.fs.writeFileSync(this.settings.imageCacheDir + `/${attachmentId}${fileExtension}`, buffer, { encoding: null });
+      // } catch (err) {
+        // console.error('Failed to save image cache', err.message);
+      // }
+    // });
   }
   cacheMessageImages(message) {
     // don't block it, ugly but works, might rework later
