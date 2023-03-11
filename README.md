@@ -9,3 +9,8 @@ If you require support for any of his plugins, join his Discord server.
 https://discord.gg/NYvWdN5
 
 All of his plugins are available for easy downloading on my website.
+
+## What's fixed:
+- Edits
+- "Open logs"
+- Message removed/edited notification???
