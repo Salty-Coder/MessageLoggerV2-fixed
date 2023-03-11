@@ -14,6 +14,7 @@ All of his plugins are available for easy downloading on his website.
 - Edits
 - "Open logs"
 - Message removed/edited notification???
+- Backup images to image cache directory
 
 ## What's to be fixed:
 - Memory leaks
