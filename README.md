@@ -14,3 +14,7 @@ All of his plugins are available for easy downloading on my website.
 - Edits
 - "Open logs"
 - Message removed/edited notification???
+
+## What's to be fixed:
+- Memory leaks
+- Restore original modal handling for "Open logs"
