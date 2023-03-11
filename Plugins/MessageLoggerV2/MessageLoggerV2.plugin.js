@@ -40,7 +40,7 @@ module.exports = class MessageLoggerV2 {
     return 'MessageLoggerV2';
   }
   getVersion() {
-    return '2.0';
+    return '2.1';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
