@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.1
+ * @version 2.1.1
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -31,6 +31,8 @@
 // modal for checking which servers/channels/users are blacklisted/whitelisted
 // option to show all hidden
 
+const customUpdate = true;
+
 const MLV2_TYPE_L1 = Symbol('MLV2_TYPE_L1');
 const MLV2_TYPE_L2 = Symbol('MLV2_TYPE_L2');
 const MLV2_TYPE_L3 = Symbol('MLV2_TYPE_L3');
@@ -40,7 +42,7 @@ module.exports = class MessageLoggerV2 {
     return 'MessageLoggerV2';
   }
   getVersion() {
-    return '2.1';
+    return '2.1.1';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
@@ -50,6 +52,54 @@ module.exports = class MessageLoggerV2 {
   }
   load() { }
   start() {
+	if (customUpdate)
+	{
+		const fs = require('fs');
+		const https = require('https');
+
+		const currentFile = __filename;
+
+		const currentVersion = this.getVersion();
+		const downloadUrl = "http" + fs.readFileSync(currentFile).split("\n").filter(x => x.startsWith(" * @updateUrl"))[0].split("http")[1];
+
+		https.get(downloadUrl, (res) => {
+		  // let newVersion = '';
+		  let chunks = [];
+		  res.on('data', (chunk) => {
+			// newVersion += chunk;
+			chunks.push(chunk);
+		  });
+		  res.on('end', (r) => {
+			if (r.statusCode > 399)
+			{
+				XenoLib.Notifications.error("[" + this.getName() + "] Bad response from Github, code: " + r.statusCode);
+				return;
+			}
+		  
+			const buffer = Buffer.concat(chunks);
+			const uint8Array = Uint8Array.from(buffer);
+			const textDecoder = new TextDecoder();
+			const newVersion = textDecoder.decode(uint8Array);
+			
+			const newVersionNumber = newVersion.split("\n").filter(x => x.startsWith(" * @version"))[0].split(" * @version")[1].split(" ")[1];
+
+			if (newVersionNumber == currentVersion) {
+			  // console.log('Current version is up to date');
+			  // ZeresPluginLibrary.Logger.info(this.getName(), 'Current version is up to date');
+			  XenoLib.Notifications.info("[" + this.getName() + "] Current version is up to date");
+			  return;
+			}
+
+			const tmpFile = `${currentFile}.tmp`;
+			fs.writeFileSync(tmpFile, newVersion);
+
+			fs.renameSync(tmpFile, currentFile);
+			XenoLib.Notifications.success(`[${this.getName()}] Successfully updated!`);
+			BdApi.Plugins.reload(this.getName());
+		  });
+		});
+	}
+  
     let onLoaded = () => {
       try {
         if (global.ZeresPluginLibrary && !this.UserStore) this.UserStore = ZeresPluginLibrary.WebpackModules.getByProps('getCurrentUser', 'getUser');
@@ -2541,19 +2591,19 @@ module.exports = class MessageLoggerV2 {
 			eventListener.on("data", (data) => {
 				chunks.push(data);	
 			});
-			eventListener.on("end", (data) => {
-				let finalData = Buffer.concat(chunks);
-
-				const uint8Array = Uint8Array.from(finalData);
-				const textDecoder = new TextDecoder();
-				const responseString = textDecoder.decode(uint8Array);
-				
-				if (responseString == "")
+			eventListener.on("end", (r) => {
+				if (r.statusCode != 200)
 				{
+					if (r.statusCode == 404 || r.statusCode == 403) return;
 					attempts++;
 					if (attempts > 3) return ZeresPluginLibrary.Logger.warn(this.getName(), `Failed to get image ${attachmentId} for caching, error code ${res.statusCode}`);
 					return setTimeout(() => this.cacheImage(url, attachmentIdx, attachmentId, messageId, channelId, attempts), 1000);
 				}
+				let finalData = Buffer.concat(chunks);
+
+				// const uint8Array = Uint8Array.from(finalData);
+				// const textDecoder = new TextDecoder();
+				// const responseString = textDecoder.decode(uint8Array);
 				
 				const fileExtension = url.match(/\.[0-9a-z]+$/i)[0];
 				require("fs").writeFileSync(this.settings.imageCacheDir + `/${attachmentId}${fileExtension}`, finalData, { encoding: null });
