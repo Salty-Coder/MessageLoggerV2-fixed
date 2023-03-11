@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.1.1
+ * @version 2.1.2
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -32,6 +32,7 @@
 // option to show all hidden
 
 const customUpdate = true;
+let alreadyTestedForUpdate = false;
 
 const MLV2_TYPE_L1 = Symbol('MLV2_TYPE_L1');
 const MLV2_TYPE_L2 = Symbol('MLV2_TYPE_L2');
@@ -42,7 +43,7 @@ module.exports = class MessageLoggerV2 {
     return 'MessageLoggerV2';
   }
   getVersion() {
-    return '2.1.1';
+    return '2.1.2';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
@@ -52,54 +53,6 @@ module.exports = class MessageLoggerV2 {
   }
   load() { }
   start() {
-	if (customUpdate)
-	{
-		const fs = require('fs');
-		const https = require('https');
-
-		const currentFile = __filename;
-
-		const currentVersion = this.getVersion();
-		const downloadUrl = "http" + fs.readFileSync(currentFile).split("\n").filter(x => x.startsWith(" * @updateUrl"))[0].split("http")[1];
-
-		https.get(downloadUrl, (res) => {
-		  // let newVersion = '';
-		  let chunks = [];
-		  res.on('data', (chunk) => {
-			// newVersion += chunk;
-			chunks.push(chunk);
-		  });
-		  res.on('end', (r) => {
-			if (r.statusCode > 399)
-			{
-				XenoLib.Notifications.error("[" + this.getName() + "] Bad response from Github, code: " + r.statusCode);
-				return;
-			}
-		  
-			const buffer = Buffer.concat(chunks);
-			const uint8Array = Uint8Array.from(buffer);
-			const textDecoder = new TextDecoder();
-			const newVersion = textDecoder.decode(uint8Array);
-			
-			const newVersionNumber = newVersion.split("\n").filter(x => x.startsWith(" * @version"))[0].split(" * @version")[1].split(" ")[1];
-
-			if (newVersionNumber == currentVersion) {
-			  // console.log('Current version is up to date');
-			  // ZeresPluginLibrary.Logger.info(this.getName(), 'Current version is up to date');
-			  XenoLib.Notifications.info("[" + this.getName() + "] Current version is up to date");
-			  return;
-			}
-
-			const tmpFile = `${currentFile}.tmp`;
-			fs.writeFileSync(tmpFile, newVersion);
-
-			fs.renameSync(tmpFile, currentFile);
-			XenoLib.Notifications.success(`[${this.getName()}] Successfully updated!`);
-			BdApi.Plugins.reload(this.getName());
-		  });
-		});
-	}
-  
     let onLoaded = () => {
       try {
         if (global.ZeresPluginLibrary && !this.UserStore) this.UserStore = ZeresPluginLibrary.WebpackModules.getByProps('getCurrentUser', 'getUser');
@@ -237,6 +190,60 @@ module.exports = class MessageLoggerV2 {
       }
     ];
   }
+  
+  setupUpdate() {
+	setTimeout(() => {
+		if (customUpdate && !alreadyTestedForUpdate)
+		{
+			const fs = require('fs');
+			const https = require('https');
+
+			const currentFile = __filename;
+
+			const currentVersion = this.getVersion();
+			const downloadUrl = "http" + fs.readFileSync(currentFile).split("\n").filter(x => x.startsWith(" * @updateUrl"))[0].split("http")[1];
+
+			https.get(downloadUrl, (res) => {
+			  // let newVersion = '';
+			  let chunks = [];
+			  res.on('data', (chunk) => {
+				// newVersion += chunk;
+				chunks.push(chunk);
+			  });
+			  res.on('end', (r) => {
+				alreadyTestedForUpdate = true;
+				if (r.statusCode > 399)
+				{
+					XenoLib.Notifications.error("[" + this.getName() + "] Bad response from Github, code: " + r.statusCode);
+					return;
+				}
+			  
+				const buffer = Buffer.concat(chunks);
+				const uint8Array = Uint8Array.from(buffer);
+				const textDecoder = new TextDecoder();
+				const newVersion = textDecoder.decode(uint8Array);
+				
+				const newVersionNumber = newVersion.split("\n").filter(x => x.startsWith(" * @version"))[0].split(" * @version")[1].split(" ")[1];
+
+				if (newVersionNumber == currentVersion) {
+				  // console.log('Current version is up to date');
+				  ZeresPluginLibrary.Logger.info(this.getName(), 'Current version is up to date');
+				  XenoLib.Notifications.info("[" + this.getName() + "] Current version is up to date");
+				  return;
+				}
+
+				const tmpFile = `${currentFile}.tmp`;
+				fs.writeFileSync(tmpFile, newVersion);
+
+				fs.renameSync(tmpFile, currentFile);
+				XenoLib.Notifications.success(`[${this.getName()}] Successfully updated!`);
+				BdApi.Plugins.reload(this.getName());
+			  });
+			});
+		}
+	}, 10 * 1000);
+  }
+  
   initialize() {
     if (this.__started) return XenoLib.Notifications.warning(`[**${this.getName()}**] Tried to start twice..`, { timeout: 0 });
     this.__started = true;
@@ -926,7 +933,7 @@ module.exports = class MessageLoggerV2 {
     );
     this.patchMessages();
     this.patchModal();
-
+	this.setupUpdate();
     // const createKeybindListener = () => {
     //   this.keybindListener = new (ZeresPluginLibrary.WebpackModules.getModule(m => typeof m === 'function' && m.toString().includes('.default.setOnInputEventCallback')))();
     //   this.keybindListener.on('change', e => {
