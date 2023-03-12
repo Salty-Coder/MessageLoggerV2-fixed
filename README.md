@@ -19,3 +19,8 @@ All of his plugins are available for easy downloading on his website.
 ## What's to be fixed:
 - Memory leaks
 - Restore original modal handling for "Open logs"
+
+## What's custom
+- Custom updater
+- Support for embed images (thanks for idea @Ansemik_CZE)
+- Some other stuff I don't remember
