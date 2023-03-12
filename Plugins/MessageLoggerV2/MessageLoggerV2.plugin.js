@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.2.5
+ * @version 2.2.6
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -43,7 +43,7 @@ module.exports = class MessageLoggerV2 {
   }
   getVersion() {
 	// this.alreadyTestedForUpdate = false;
-    return '2.2.5';
+    return '2.2.6';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
@@ -2665,7 +2665,15 @@ module.exports = class MessageLoggerV2 {
 				else
 				{
 					let savePath = this.settings.newCacheAllImagesPath && this.settings.newCacheAllImagesPath != '' && require("fs").existsSync(this.settings.newCacheAllImagesPath) ? this.settings.newCacheAllImagesPath : this.settings.imageCacheDir;
-					let filePath = savePath + "/" + serverId + " (" + ZLibrary.DiscordModules.GuildStore.getGuild(serverId).name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9_. -]/g, "") + ")" + "/" + channelId + " (" + ZLibrary.DiscordModules.ChannelStore.getChannel(channelId).name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9_. -]/g, "") + ")";
+					// todo make it readable
+					// let serverNameRaw = serverId != null ? ZLibrary.DiscordModules.GuildStore.getGuild(serverId).name : ZLibrary.DiscordModules.ChannelStore.getChannel(channelId).recipients.length == 1 ? ZLibrary.DiscordModules.ChannelStore.getChannel(channelId).rawRecipients[0].username : "Unknown DM";
+					let serverNameRaw = serverId != null ? ZLibrary.DiscordModules.GuildStore.getGuild(serverId).name : "DMs";
+					let channelNameRaw = serverId != null ? ZLibrary.DiscordModules.ChannelStore.getChannel(channelId).name : ZLibrary.DiscordModules.ChannelStore.getChannel(channelId).recipients.length == 1 ? ZLibrary.DiscordModules.ChannelStore.getChannel(channelId).rawRecipients[0].username : "Unknown DM";
+					
+					let serverName = serverNameRaw.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9_. -]/g, "");
+					let channelName = channelNameRaw.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9_. -]/g, "");
+					
+					let filePath = savePath + "/" + ( serverId != null ? serverId + " (" + serverName + ")" : serverName ) + "/" + channelId + " (" + channelName + ")";
 					require("fs").mkdirSync(filePath, { recursive: true });
 					require("fs").writeFileSync(filePath + `/${attachmentId} (${messageId})${fileExtension}`, finalData, { encoding: null });
 				}
