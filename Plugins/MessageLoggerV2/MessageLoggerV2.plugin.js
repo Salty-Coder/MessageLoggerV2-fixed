@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.2.1
+ * @version 2.2.3
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -43,7 +43,7 @@ module.exports = class MessageLoggerV2 {
   }
   getVersion() {
 	// this.alreadyTestedForUpdate = false;
-    return '2.2.1';
+    return '2.2.3';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
@@ -313,6 +313,8 @@ module.exports = class MessageLoggerV2 {
       disableKeybind: false,
       cacheAllImages: true,
       dontDeleteCachedImages: false,
+	  newCacheAllImagesPath: '',
+	  newCacheAllImages: false,
       aggresiveMessageCaching: true,
       // openLogKeybind: [
       //   /* 162, 77 */
@@ -1522,6 +1524,18 @@ module.exports = class MessageLoggerV2 {
             id: 'dontDeleteCachedImages',
             type: 'switch'
           },
+		  {
+            name: "Use new cached images system",
+            note: "Makes image cache in a hierarchy",
+            id: 'newCacheAllImages',
+            type: 'switch'
+          },
+		  {
+            name: 'Path to new cached images system (optional)',
+            note: "",
+            id: 'newCacheAllImagesPath',
+            type: 'textbox'
+          },
           {
             name: 'Display open logs button next to the search box top right in channels',
             id: 'showOpenLogsButton',
@@ -2591,7 +2605,7 @@ module.exports = class MessageLoggerV2 {
     if (!record) return this.cachedMessageRecord.find(m => m.id == id);
     return record.message;
   }
-  cacheImage(url, attachmentIdx, attachmentId, messageId, channelId, attempts = 0) {
+  cacheImage(url, attachmentIdx, attachmentId, messageId, channelId, attempts = 0, serverId) {
     // this.nodeModules.request({ url: url, encoding: null, headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9002 Chrome/83.0.4103.122 Electron/9.3.5 Safari/537.36' } }, (err, res, buffer) => {
       // try {
         // if (err || res.statusCode != 200) {
@@ -2628,7 +2642,15 @@ module.exports = class MessageLoggerV2 {
 				
 				const fileExtension = url.match(/\.[0-9a-z]+$/i)[0];
 				if (!Number(attachmentId)) attachmentId = messageId;
-				require("fs").writeFileSync(this.settings.imageCacheDir + `/${attachmentId}${fileExtension}`, finalData, { encoding: null });
+				if (!(this.settings.newCacheAllImages === true))
+					require("fs").writeFileSync(this.settings.imageCacheDir + `/${attachmentId}${fileExtension}`, finalData, { encoding: null });
+				else
+				{
+					let savePath = this.settings.newCacheAllImagesPath && this.settings.newCacheAllImagesPath != '' && require("fs").existsSync(this.settings.newCacheAllImagesPath) ? this.settings.newCacheAllImagesPath : this.settings.imageCacheDir;
+					let filePath = savePath + "/" + serverId + " (" + ZLibrary.DiscordModules.GuildStore.getGuild(serverId).name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9_. -]/g, "") + ")" + "/" + channelId + " (" + ZLibrary.DiscordModules.ChannelStore.getChannel(channelId).name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9_. -]/g, "") + ")";
+					require("fs").mkdirSync(filePath, { recursive: true });
+					require("fs").writeFileSync(filePath + `/${attachmentId} (${messageId})${fileExtension}`, finalData, { encoding: null });
+				}
 			});
 	});
 	// {
@@ -2652,13 +2674,13 @@ module.exports = class MessageLoggerV2 {
       for (let i = 0; i < message.attachments.length; i++) {
         const attachment = message.attachments[i];
         if (!this.isImage(attachment.url)) continue;
-        this.cacheImage(attachment.url, i, attachment.id, message.id, message.channel_id);
+        this.cacheImage(attachment.url, i, attachment.id, message.id, message.channel_id, undefined, this.settings.newCacheAllImages === true ? message.guild_id : undefined);
       }
 	  for (let i = 0; i < message.embeds.length; i++) {
 		if (!message.embeds[i].image) continue;
         const embed = message.embeds[i].image;
         // if (!this.isImage(embed.url)) continue; // it's obviously image
-        this.cacheImage(embed.url, i, embed.url.split("/")[embed.url.split("/").length - 2], message.id, message.channel_id);
+        this.cacheImage(embed.url, i, embed.url.split("/")[embed.url.split("/").length - 2], message.id, message.channel_id, undefined, this.settings.newCacheAllImages === true ? message.guild_id : undefined);
       }
     }, 0);
   }
