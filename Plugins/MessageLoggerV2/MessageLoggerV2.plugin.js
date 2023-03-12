@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.1.9
+ * @version 2.2
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -43,7 +43,7 @@ module.exports = class MessageLoggerV2 {
   }
   getVersion() {
 	// this.alreadyTestedForUpdate = false;
-    return '2.1.9';
+    return '2.2';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
@@ -234,13 +234,16 @@ module.exports = class MessageLoggerV2 {
 				  XenoLib.Notifications.info("[" + this.getName() + "] Current version is up to date");
 				  return;
 				}
+				ZeresPluginLibrary.Logger.info(this.getName(), 'Update found');
+				XenoLib.Notifications.info("[" + this.getName() + "] Update found");
+				BdApi.UI.showConfirmationModal(this.getName() + " update available", "Do you want to install latest update?\n\nCurrent version: " + this.getVersion() + "\n\nNew version: " + newVersionNumber, { cancelText: "No", confirmText: "Yes", onConfirm: () => {
+						const tmpFile = `${currentFile}.tmp`;
+						fs.writeFileSync(tmpFile, newVersion);
 
-				const tmpFile = `${currentFile}.tmp`;
-				fs.writeFileSync(tmpFile, newVersion);
-
-				fs.renameSync(tmpFile, currentFile);
-				XenoLib.Notifications.success(`[${this.getName()}] Successfully updated!`);
-				BdApi.Plugins.reload(this.getName());
+						fs.renameSync(tmpFile, currentFile);
+						XenoLib.Notifications.success(`[${this.getName()}] Successfully updated!`);
+						BdApi.Plugins.reload(this.getName());
+				} });
 			  });
 			});
 		}
