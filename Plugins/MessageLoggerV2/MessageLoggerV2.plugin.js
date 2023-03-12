@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.1.4
+ * @version 2.1.5
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -43,7 +43,7 @@ module.exports = class MessageLoggerV2 {
   }
   getVersion() {
 	this.alreadyTestedForUpdate = false;
-    return '2.1.4';
+    return '2.1.5';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
@@ -2478,6 +2478,13 @@ module.exports = class MessageLoggerV2 {
         attachments[i].url = attachments[i].proxy_url; // proxy url lasts longer
       }
     }
+	if (this.messageRecord[id].message.embeds) {
+      const embeds = this.messageRecord[id].message.embeds;
+      for (let i = 0; i < embeds.length; i++) {
+		if (embeds[i].image)
+			embeds[i].image.url = embeds[i].image.proxy_url; // proxy url lasts longer
+      }
+    }
     if (this.settings.cacheAllImages) this.cacheMessageImages(this.messageRecord[id].message);
     targetMessageRecord[channelId].push(id);
   }
@@ -2638,6 +2645,12 @@ module.exports = class MessageLoggerV2 {
         const attachment = message.attachments[i];
         if (!this.isImage(attachment.url)) continue;
         this.cacheImage(attachment.url, i, attachment.id, message.id, message.channel_id);
+      }
+	  for (let i = 0; i < message.embeds.length; i++) {
+		if (!message.embeds[i].image) continue;
+        const embed = message.embeds[i].image;
+        // if (!this.isImage(embed.url)) continue; // it's obviously image
+        this.cacheImage(embed.url, i, embed.url.split("/")[embed.url.split("/").length - 2], message.id, message.channel_id);
       }
     }, 0);
   }
