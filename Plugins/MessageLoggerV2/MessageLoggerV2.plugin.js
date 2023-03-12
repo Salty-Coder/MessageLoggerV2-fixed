@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.2.4
+ * @version 2.2.5
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -43,7 +43,7 @@ module.exports = class MessageLoggerV2 {
   }
   getVersion() {
 	// this.alreadyTestedForUpdate = false;
-    return '2.2.4';
+    return '2.2.5';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
@@ -252,17 +252,20 @@ module.exports = class MessageLoggerV2 {
   
   setupUpdate() {
 	this.checkNewUpdate();
-	let timeoutId;
-	let thisThis = this;
-	function resetTimer() {
-	  clearTimeout(timeoutId);
-	  timeoutId = setTimeout(function() {
-		  XenoLib.Notifications.info("[" + thisThis.getName() + "] Checking for update");
-		  thisThis.alreadyTestedForUpdate = false;
-		  thisThis.checkNewUpdate();
-	  }, 10 * 60 * 1000);
+	if (!document.mouseMoveListenerAdded) {
+		let timeoutId;
+		let thisThis = this;
+		function resetTimer() {
+		  clearTimeout(timeoutId);
+		  timeoutId = setTimeout(function() {
+			  XenoLib.Notifications.info("[" + thisThis.getName() + "] Checking for update");
+			  thisThis.alreadyTestedForUpdate = false;
+			  thisThis.checkNewUpdate();
+		  }, 10 * 60 * 1000);
+		}
+		document.addEventListener("mousemove", resetTimer);
+		document.mouseMoveListenerAdded = true;
 	}
-	document.addEventListener("mousemove", resetTimer);
   }
   
   initialize() {
