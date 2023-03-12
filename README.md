@@ -1,4 +1,4 @@
-# MessageLogger V2
+# MessageLogger V2 [<a href="https://davilarek.github.io/MessageLoggerV2-fixed/download/">Download</a>]
 #### Info
 The MLV2 was created by Lighty. I just fixed it.
 
