@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.1.8
+ * @version 2.1.9
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -42,8 +42,8 @@ module.exports = class MessageLoggerV2 {
     return 'MessageLoggerV2';
   }
   getVersion() {
-	this.alreadyTestedForUpdate = false;
-    return '2.1.8';
+	// this.alreadyTestedForUpdate = false;
+    return '2.1.9';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
