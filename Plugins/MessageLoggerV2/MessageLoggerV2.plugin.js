@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.1.7
+ * @version 2.1.8
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -43,7 +43,7 @@ module.exports = class MessageLoggerV2 {
   }
   getVersion() {
 	this.alreadyTestedForUpdate = false;
-    return '2.1.7';
+    return '2.1.8';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
@@ -53,6 +53,8 @@ module.exports = class MessageLoggerV2 {
   }
   load() { }
   start() {
+	if (this.updateTimeout)
+		clearTimeout(this.updateTimeout);
     let onLoaded = () => {
       try {
         if (global.ZeresPluginLibrary && !this.UserStore) this.UserStore = ZeresPluginLibrary.WebpackModules.getByProps('getCurrentUser', 'getUser');
@@ -175,6 +177,7 @@ module.exports = class MessageLoggerV2 {
     } else onLoaded();
   }
   stop() {
+	clearTimeout(this.updateTimeout);
     try {
       this.shutdown();
     } catch (err) {
@@ -192,7 +195,7 @@ module.exports = class MessageLoggerV2 {
   }
   
   setupUpdate() {
-	setTimeout(() => {
+	this.updateTimeout = setTimeout(() => {
 		if (customUpdate && !this.alreadyTestedForUpdate)
 		{
 			this.alreadyTestedForUpdate = true;
