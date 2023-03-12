@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.2.3
+ * @version 2.2.4
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -43,7 +43,7 @@ module.exports = class MessageLoggerV2 {
   }
   getVersion() {
 	// this.alreadyTestedForUpdate = false;
-    return '2.2.3';
+    return '2.2.4';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
@@ -194,7 +194,7 @@ module.exports = class MessageLoggerV2 {
     ];
   }
   
-  setupUpdate() {
+  checkNewUpdate() {
 	this.updateTimeout = setTimeout(() => {
 		if (customUpdate && !this.alreadyTestedForUpdate)
 		{
@@ -237,17 +237,32 @@ module.exports = class MessageLoggerV2 {
 				ZeresPluginLibrary.Logger.info(this.getName(), 'Update found');
 				XenoLib.Notifications.info("[" + this.getName() + "] Update found");
 				BdApi.UI.showConfirmationModal(this.getName() + " update available", "Do you want to install latest update?\n\nCurrent version: " + this.getVersion() + "\n\nNew version: " + newVersionNumber, { cancelText: "No", confirmText: "Yes", onConfirm: () => {
-						// const tmpFile = `${currentFile}.tmp`;
-						fs.writeFileSync(currentFile, newVersion);
+					// const tmpFile = `${currentFile}.tmp`;
+					fs.writeFileSync(currentFile, newVersion);
 
-						// fs.renameSync(tmpFile, currentFile);
-						XenoLib.Notifications.success(`[${this.getName()}] Successfully updated!`);
-						BdApi.Plugins.reload(this.getName());
+					// fs.renameSync(tmpFile, currentFile);
+					XenoLib.Notifications.success(`[${this.getName()}] Successfully updated!`);
+					BdApi.Plugins.reload(this.getName());
 				} });
 			  });
 			});
 		}
 	}, 10 * 1000);
+  }
+  
+  setupUpdate() {
+	this.checkNewUpdate();
+	let timeoutId;
+	let thisThis = this;
+	function resetTimer() {
+	  clearTimeout(timeoutId);
+	  timeoutId = setTimeout(function() {
+		  XenoLib.Notifications.info("[" + thisThis.getName() + "] Checking for update");
+		  thisThis.alreadyTestedForUpdate = false;
+		  thisThis.checkNewUpdate();
+	  }, 10 * 60 * 1000);
+	}
+	document.addEventListener("mousemove", resetTimer);
   }
   
   initialize() {
