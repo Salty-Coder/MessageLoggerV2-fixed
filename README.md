@@ -14,7 +14,7 @@ All of his plugins are available for easy downloading on his website.
 - Edits
 - "Open logs"
 - Message removed/edited notification???
-- Backup images to image cache directory
+- Saving images to image cache directory
 
 ## What's to be fixed:
 - Memory leaks
@@ -23,4 +23,5 @@ All of his plugins are available for easy downloading on his website.
 ## What's custom:
 - Custom updater
 - Support for embed images (thanks for idea @Ansemik_CZE)
+- Saving images to directory structure main_folder/server_name/channel_name/file_name ("Use new cached images system" in settings) (thanks for idea @Ansemik_CZE)
 - Some other stuff I don't remember
