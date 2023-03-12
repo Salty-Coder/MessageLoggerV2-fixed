@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.1.6
+ * @version 2.1.7
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -43,7 +43,7 @@ module.exports = class MessageLoggerV2 {
   }
   getVersion() {
 	this.alreadyTestedForUpdate = false;
-    return '2.1.6';
+    return '2.1.7';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
@@ -2600,8 +2600,6 @@ module.exports = class MessageLoggerV2 {
         // console.error('Failed to save image cache', err.message);
       // }
     // });
-	
-	if (!Number(attachmentId)) attachmentId = messageId;
 		
 	let chunks = [];
 	require("https").get(url, {}, (eventListener) => {
@@ -2623,6 +2621,7 @@ module.exports = class MessageLoggerV2 {
 				// const responseString = textDecoder.decode(uint8Array);
 				
 				const fileExtension = url.match(/\.[0-9a-z]+$/i)[0];
+				if (!Number(attachmentId)) attachmentId = messageId;
 				require("fs").writeFileSync(this.settings.imageCacheDir + `/${attachmentId}${fileExtension}`, finalData, { encoding: null });
 			});
 	});
