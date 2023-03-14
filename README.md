@@ -21,7 +21,6 @@ All of his plugins are available for easy downloading on his website.
 - Restore original modal handling for "Open logs"
 
 ## What's custom:
-- Custom updater
 - Support for embed images (thanks for idea @Ansemik_CZE)
 - Saving images to directory structure main_folder/server_name/channel_name/file_name ("Use new cached images system" in settings) (thanks for idea @Ansemik_CZE)
 - Some other stuff I don't remember
