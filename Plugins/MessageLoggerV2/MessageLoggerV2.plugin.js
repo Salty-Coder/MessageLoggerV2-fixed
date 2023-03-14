@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.2.7
+ * @version 2.2.8
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -43,7 +43,7 @@ module.exports = class MessageLoggerV2 {
   }
   getVersion() {
 	// this.alreadyTestedForUpdate = false;
-    return '2.2.7';
+    return '2.2.8';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
@@ -2535,7 +2535,8 @@ module.exports = class MessageLoggerV2 {
   createModal(options, image, name) {
     // const modal = image ? this.createModal.imageModal : this.createModal.confirmationModal;
 	const modal = "div";
-	options.size = Object.keys(ZLibrary.WebpackModules.getByProps("Header", "Footer").Sizes)[Object.values(ZLibrary.WebpackModules.getByProps("Header", "Footer").Sizes).indexOf(options.size)].toLowerCase();
+	if (options.size)
+		options.size = Object.keys(ZLibrary.WebpackModules.getByProps("Header", "Footer").Sizes)[Object.values(ZLibrary.WebpackModules.getByProps("Header", "Footer").Sizes).indexOf(options.size)].toLowerCase();
 	// this.ModalStack.openModal(props => ZeresPluginLibrary.DiscordModules.React.createElement(modal, Object.assign({}, options, props, options.onClose ? { onClose: options.onClose } : {})), { modalKey: name });
     // this.menu.modalMain = ZLibrary.DiscordModules.ModalActions.openModal(props => ZeresPluginLibrary.DiscordModules.React.createElement(modal, Object.assign({}, options, props, options.onClose ? { onClose: options.onClose } : {})), { modalKey: name });
     // this.menu.modalMain = BdApi.showConfirmationModal("sussy", ZeresPluginLibrary.DiscordModules.React.createElement(modal, Object.assign({}, options, options.onClose ? { onClose: options.onClose } : {})));
@@ -4677,7 +4678,7 @@ module.exports = class MessageLoggerV2 {
     //messagesDIV.style.display = 'none';
     const onChangeOrder = el => {
       this.settings.reverseOrder = !this.settings.reverseOrder;
-      el.target.innerText = 'Sort direction: ' + (!this.settings.reverseOrder ? 'new - old' : 'old - new'); // maybe a func?
+      // el.target.innerText = 'Sort direction: ' + (!this.settings.reverseOrder ? 'new - old' : 'old - new'); // maybe a func?
       this.saveSettings();
       this.refilterMessages();
     };
