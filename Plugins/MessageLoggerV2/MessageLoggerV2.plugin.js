@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.2.8
+ * @version 2.2.9
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -31,7 +31,7 @@
 // modal for checking which servers/channels/users are blacklisted/whitelisted
 // option to show all hidden
 
-const customUpdate = true;
+const customUpdate = false;
 
 const MLV2_TYPE_L1 = Symbol('MLV2_TYPE_L1');
 const MLV2_TYPE_L2 = Symbol('MLV2_TYPE_L2');
@@ -43,7 +43,7 @@ module.exports = class MessageLoggerV2 {
   }
   getVersion() {
 	// this.alreadyTestedForUpdate = false;
-    return '2.2.8';
+    return '2.2.9';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
@@ -959,7 +959,7 @@ module.exports = class MessageLoggerV2 {
     );
     this.patchMessages();
     this.patchModal();
-	this.setupUpdate();
+	// this.setupUpdate();
     // const createKeybindListener = () => {
     //   this.keybindListener = new (ZeresPluginLibrary.WebpackModules.getModule(m => typeof m === 'function' && m.toString().includes('.default.setOnInputEventCallback')))();
     //   this.keybindListener.on('change', e => {
