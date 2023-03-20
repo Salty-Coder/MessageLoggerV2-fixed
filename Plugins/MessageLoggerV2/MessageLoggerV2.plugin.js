@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.3.5
+ * @version 2.4
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -43,7 +43,7 @@ module.exports = class MessageLoggerV2 {
   }
   getVersion() {
 	// this.alreadyTestedForUpdate = false;
-    return '2.3.5';
+    return '2.4';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
@@ -333,6 +333,10 @@ module.exports = class MessageLoggerV2 {
       dontDeleteCachedImages: false,
 	  newCacheAllImagesPath: '',
 	  newCacheAllImages: false,
+	  alwaysNotifChannel: false,
+	  alwaysNotifGuild: false,
+	  notifOnlyWhitelist: false,
+	  notificationWhitelist: [],
       aggresiveMessageCaching: true,
       // openLogKeybind: [
       //   /* 162, 77 */
@@ -1548,6 +1552,21 @@ module.exports = class MessageLoggerV2 {
             name: "Use new cached images system",
             note: "Makes image cache in a hierarchy",
             id: 'newCacheAllImages',
+            type: 'switch'
+          },
+		  {
+            name: "Always show notifications for selected channel",
+            id: 'alwaysNotifChannel',
+            type: 'switch'
+          },
+		  {
+            name: "Always show notifications for selected guild",
+            id: 'alwaysNotifGuild',
+            type: 'switch'
+          },
+		  {
+            name: "Show notifications to whitelisted only",
+            id: 'notifOnlyWhitelist',
             type: 'switch'
           },
 		  {
@@ -2900,6 +2919,50 @@ module.exports = class MessageLoggerV2 {
         channelIgnoreReturn = (this.settings.ignoreNSFW && channel.nsfw && !channelWhitelisted) || (this.settings.ignoreMutedChannels && (this.muteModule.isChannelMuted(guild.id, channel.id) || (channel.parent_id && this.muteModule.isChannelMuted(guild.id, channel.parent_id))));
       }
 
+	  const editOrDel = dispatch.type == 'MESSAGE_DELETE' ? 1 : dispatch.type == 'MESSAGE_UPDATE' ? 2 : 0;
+	  if (editOrDel != 0 && (this.settings.notificationBlacklist.indexOf(channel.id) !== -1 || (guild && this.settings.notificationBlacklist.indexOf(guild.id) !== -1)) && ((this.settings.alwaysNotifChannel && this.selectedChannel && this.selectedChannel.id == channel.id) || (this.settings.alwaysNotifGuild && guild && this.selectedChannel.guild_id == guild.id))) {
+		 // TODO: use switch case
+		 console.log("Triggered always notif selected condition: ");
+		 const cond = (this.settings.alwaysNotifChannel && this.selectedChannel && this.selectedChannel.id == channel.id) ? "channel" : "guild";
+		 console.log(cond);
+		 if (editOrDel == 1) {
+			 if (guild ? this.settings.toastToggles.deleted && ((isLocalUser && !this.settings.toastToggles.disableToastsForLocal) || !isLocalUser) : this.settings.toastTogglesDMs.deleted && !isLocalUser) {
+				if (this.settings.useNotificationsInstead) {
+				  XenoLib.Notifications.danger(`Message deleted from ${this.getLiteralName(channel.guild_id, channel.id, true)}`, {
+					onClick: () => this.openWindow('deleted'),
+					onContext: () => this.jumpToMessage(dispatch.channelId, dispatch.id, guild && guild.id),
+					timeout: 4500
+				  });
+				} else {
+				  this.showToast(`Message deleted from ${this.getLiteralName(channel.guild_id, channel.id)}`, {
+					type: 'error',
+					onClick: () => this.openWindow('deleted'),
+					onContext: () => this.jumpToMessage(dispatch.channelId, dispatch.id, guild && guild.id),
+					timeout: 4500
+				  });
+				}
+			  }
+		 }
+		 else if (editOrDel == 2) {
+			if (guild ? this.settings.toastToggles.edited && ((isLocalUser && !this.settings.toastToggles.disableToastsForLocal) || !isLocalUser) : this.settings.toastTogglesDMs.edited && !isLocalUser) {
+			  if (this.settings.useNotificationsInstead) {
+				XenoLib.Notifications.info(`Message edited in ${this.getLiteralName(channel.guild_id, channel.id, true)}`, {
+				  onClick: () => this.openWindow('edited'),
+				  onContext: () => this.jumpToMessage(channel.id, dispatch.message.id, guild && guild.id),
+				  timeout: 4500
+				});
+			  } else {
+				this.showToast(`Message edited in ${this.getLiteralName(channel.guild_id, channel.id)}`, {
+				  type: 'info',
+				  onClick: () => this.openWindow('edited'),
+				  onContext: () => this.jumpToMessage(channel.id, dispatch.message.id, guild && guild.id),
+				  timeout: 4500
+				});
+			  }
+			}
+		 }
+	  }
+			
       if (!((this.settings.alwaysLogSelected && this.selectedChannel && this.selectedChannel.id == channel.id) || (this.settings.alwaysLogDM && !guild))) {
         if (guildBlacklisted) {
           if (!channelWhitelisted) doReturn = true; // not whitelisted
@@ -3046,6 +3109,9 @@ module.exports = class MessageLoggerV2 {
       }
 
       const notificationsBlacklisted = this.settings.notificationBlacklist.indexOf(channel.id) !== -1 || (guild && this.settings.notificationBlacklist.indexOf(guild.id) !== -1);
+	  let notificationsWhitelisted = true;
+	  if (this.settings.notifOnlyWhitelist)
+		notificationsWhitelisted = this.settings.notificationWhitelist.indexOf(channel.id) !== -1 || (guild && this.settings.notificationWhitelist.indexOf(guild.id) !== -1);
 
       if (dispatch.type == 'MESSAGE_DELETE') {
         const deleted = this.getCachedMessage(dispatch.id, dispatch.channelId);
@@ -3131,7 +3197,7 @@ module.exports = class MessageLoggerV2 {
           const channelMessages = this.channelMessages[channel.id];
           if (!channelMessages || !channelMessages.ready) this.cacheChannelMessages(channel.id);
         }
-        if (!notificationsBlacklisted) {
+        if (!notificationsBlacklisted && notificationsWhitelisted) {
           if (guild ? this.settings.toastToggles.deleted : this.settings.toastTogglesDMs.deleted) {
             if (this.settings.useNotificationsInstead) {
               XenoLib.Notifications.danger(`${dispatch.ids.length} messages bulk deleted from ${this.getLiteralName(channel.guild_id, channel.id, true)}`, {
@@ -3208,7 +3274,7 @@ module.exports = class MessageLoggerV2 {
           if (!this.editedMessageRecord[channel.id]) this.editedMessageRecord[channel.id] = [];
           this.editedMessageRecord[channel.id].push(data.message.id);
         }
-        if (!notificationsBlacklisted) {
+        if (!notificationsBlacklisted && notificationsWhitelisted) {
           if (guild ? this.settings.toastToggles.edited && ((isLocalUser && !this.settings.toastToggles.disableToastsForLocal) || !isLocalUser) : this.settings.toastTogglesDMs.edited && !isLocalUser) {
             if (!this.settings.blockSpamEdit) {
               if (!this.editHistoryAntiSpam[author.id]) {
@@ -4991,6 +5057,7 @@ module.exports = class MessageLoggerV2 {
           }
         );
       }
+	  /*
       const notifIdx = this.settings.notificationBlacklist.indexOf(id);
       addElement(
         `${notifIdx === -1 ? 'Add To' : 'Remove From'} Notification Blacklist`,
@@ -5001,6 +5068,77 @@ module.exports = class MessageLoggerV2 {
           this.showToast(notifIdx === -1 ? 'Added!' : 'Removed!', { type: 'success' });
         }
       );
+	  */
+	  
+	  // const notifIdx = this.settings.notificationBlacklist.indexOf(id);
+	  const notifWhitelistIdx = this.settings.notificationWhitelist.findIndex(m => m === id);
+      const notifBlacklistIdx = this.settings.notificationBlacklist.findIndex(m => m === id);
+	  /*
+      addElement(
+        `${notifIdx === -1 ? 'Add To' : 'Remove From'} Notification Blacklist`,
+        () => {
+          if (notifIdx === -1) this.settings.notificationBlacklist.push(id);
+          else this.settings.notificationBlacklist.splice(notifIdx, 1);
+          this.saveSettings();
+          this.showToast(notifIdx === -1 ? 'Added!' : 'Removed!', { type: 'success' });
+        },
+        this.obfuscatedClass('change-notif-blacklist')
+      );
+	  */
+	  if (notifWhitelistIdx == -1 && notifBlacklistIdx == -1) {
+        addElement(
+          `Add to Notification Whitelist`,
+          () => {
+            this.settings.notificationWhitelist.push(id);
+            this.saveSettings();
+            this.showToast('Added!', { type: 'success' });
+          }
+        );
+        addElement(
+          `Add to Notification Blacklist`,
+          () => {
+            this.settings.notificationWhitelist.push(id);
+            this.saveSettings();
+            this.showToast('Added!', { type: 'success' });
+          }
+        );
+      } else if (notifWhitelistIdx != -1) {
+        addElement(
+          `Remove From Notification Whitelist`,
+          () => {
+            this.settings.notificationWhitelist.splice(notifWhitelistIdx, 1);
+            this.saveSettings();
+            this.showToast('Removed!', { type: 'success' });
+          }
+        );
+        addElement(
+          `Move to Notification Blacklist`,
+          () => {
+            this.settings.notificationWhitelist.splice(notifWhitelistIdx, 1);
+            this.settings.notificationWhitelist.push(id);
+            this.saveSettings();
+            this.showToast('Moved!', { type: 'success' });
+          }
+        );
+      } else {
+        addElement(
+          `Remove From Notification Blacklist`,
+          () => {
+            this.settings.notificationWhitelist.splice(notifBlacklistIdx, 1);
+            this.saveSettings();
+            this.showToast('Removed!', { type: 'success' });
+          }
+        );
+        addElement(
+          `Move to Notification Whitelist`,
+          () => {
+            this.settings.notificationWhitelist.splice(notifBlacklistIdx, 1);
+            this.settings.notificationWhitelist.push(id);
+            this.saveSettings();
+            this.showToast('Moved!', { type: 'success' });
+          }
+        );
+      }
     };/*
 
     this.unpatches.push(BdApi.ContextMenu.patch('channel-context', (ret, props) => {
@@ -5584,7 +5722,10 @@ module.exports = class MessageLoggerV2 {
           this.obfuscatedClass('move-whitelist')
         );
       }
-      const notifIdx = this.settings.notificationBlacklist.indexOf(id);
+      // const notifIdx = this.settings.notificationBlacklist.indexOf(id);
+	  const notifWhitelistIdx = this.settings.notificationWhitelist.findIndex(m => m === id);
+      const notifBlacklistIdx = this.settings.notificationBlacklist.findIndex(m => m === id);
+	  /*
       addElement(
         `${notifIdx === -1 ? 'Add To' : 'Remove From'} Notification Blacklist`,
         () => {
@@ -5595,6 +5736,67 @@ module.exports = class MessageLoggerV2 {
         },
         this.obfuscatedClass('change-notif-blacklist')
       );
+	  */
+	  if (notifWhitelistIdx == -1 && notifBlacklistIdx == -1) {
+        addElement(
+          `Add to Notification Whitelist`,
+          () => {
+            this.settings.notificationWhitelist.push(id);
+            this.saveSettings();
+            this.showToast('Added!', { type: 'success' });
+          },
+          this.obfuscatedClass('add-notif-whitelist')
+        );
+        addElement(
+          `Add to Notification Blacklist`,
+          () => {
+            this.settings.notificationWhitelist.push(id);
+            this.saveSettings();
+            this.showToast('Added!', { type: 'success' });
+          },
+          this.obfuscatedClass('add-notif-blacklist')
+        );
+      } else if (notifWhitelistIdx != -1) {
+        addElement(
+          `Remove From Notification Whitelist`,
+          () => {
+            this.settings.notificationWhitelist.splice(notifWhitelistIdx, 1);
+            this.saveSettings();
+            this.showToast('Removed!', { type: 'success' });
+          },
+          this.obfuscatedClass('remove-notif-whitelist')
+        );
+        addElement(
+          `Move to Notification Blacklist`,
+          () => {
+            this.settings.notificationWhitelist.splice(notifWhitelistIdx, 1);
+            this.settings.notificationWhitelist.push(id);
+            this.saveSettings();
+            this.showToast('Moved!', { type: 'success' });
+          },
+          this.obfuscatedClass('move-notif-blacklist')
+        );
+      } else {
+        addElement(
+          `Remove From Notification Blacklist`,
+          () => {
+            this.settings.notificationWhitelist.splice(notifBlacklistIdx, 1);
+            this.saveSettings();
+            this.showToast('Removed!', { type: 'success' });
+          },
+          this.obfuscatedClass('remove-notif-blacklist')
+        );
+        addElement(
+          `Move to Notification Whitelist`,
+          () => {
+            this.settings.notificationWhitelist.splice(notifBlacklistIdx, 1);
+            this.settings.notificationWhitelist.push(id);
+            this.saveSettings();
+            this.showToast('Moved!', { type: 'success' });
+          },
+          this.obfuscatedClass('move-notif-whitelist')
+        );
+      }
     };
 
     const loggerIdentifier = this.randomString();
