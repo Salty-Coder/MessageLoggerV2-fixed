@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.3.2
+ * @version 2.3.3
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -43,7 +43,7 @@ module.exports = class MessageLoggerV2 {
   }
   getVersion() {
 	// this.alreadyTestedForUpdate = false;
-    return '2.3.2';
+    return '2.3.3';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
@@ -3927,7 +3927,8 @@ module.exports = class MessageLoggerV2 {
                 {
                   label: 'Copy Formatted Message',
                   action: () => {
-                    ZeresPluginLibrary.DiscordModules.ContextMenuActions.closeContextMenu();
+                    // ZeresPluginLibrary.DiscordModules.ContextMenuActions.closeContextMenu();
+					BdApi.ContextMenu.close();
                     let result = '';
                     for (let msgid of messageIds) {
                       const record = this.messageRecord[msgid];
@@ -3943,7 +3944,8 @@ module.exports = class MessageLoggerV2 {
                   type: 'item',
                   label: 'Remove Group From Log',
                   action: () => {
-                    ZeresPluginLibrary.DiscordModules.ContextMenuActions.closeContextMenu();
+                    // ZeresPluginLibrary.DiscordModules.ContextMenuActions.closeContextMenu();
+					BdApi.ContextMenu.close();
                     let invalidatedChannelCache = false;
                     for (let msgid of messageIds) {
                       const record = this.messageRecord[msgid];
@@ -4023,7 +4025,8 @@ module.exports = class MessageLoggerV2 {
                 type: 'item',
                 label: 'Copy Text',
                 action: () => {
-                  ZeresPluginLibrary.DiscordModules.ContextMenuActions.closeContextMenu();
+                  // ZeresPluginLibrary.DiscordModules.ContextMenuActions.closeContextMenu();
+				  BdApi.ContextMenu.close();
                   this.nodeModules.electron.clipboard.writeText(editNum != -1 ? record.edit_history[editNum].content : record.message.content);
                   this.showToast('Copied!', { type: 'success' });
                 }
@@ -4032,7 +4035,8 @@ module.exports = class MessageLoggerV2 {
                 type: 'item',
                 label: 'Copy Formatted Message',
                 action: () => {
-                  ZeresPluginLibrary.DiscordModules.ContextMenuActions.closeContextMenu();
+                  // ZeresPluginLibrary.DiscordModules.ContextMenuActions.closeContextMenu();
+				  BdApi.ContextMenu.close();
                   const content = editNum != -1 ? record.edit_history[editNum].content : record.message.content;
                   const result = `> **${record.message.author.username}** | ${this.createTimeStamp(record.message.timestamp, true)}\n> ${content.replace(/\n/g, '\n> ')}`;
                   this.nodeModules.electron.clipboard.writeText(result);
@@ -4046,7 +4050,8 @@ module.exports = class MessageLoggerV2 {
               type: 'item',
               label: 'Unhide Deleted Message',
               action: () => {
-                ZeresPluginLibrary.DiscordModules.ContextMenuActions.closeContextMenu();
+                // ZeresPluginLibrary.DiscordModules.ContextMenuActions.closeContextMenu();
+				BdApi.ContextMenu.close();
                 record.delete_data.hidden = false;
                 this.invalidateChannelCache(record.message.channel_id); // good idea?
                 this.cacheChannelMessages(record.message.channel_id);
@@ -4061,7 +4066,8 @@ module.exports = class MessageLoggerV2 {
                 type: 'item',
                 label: 'Delete Edit',
                 action: () => {
-                  ZeresPluginLibrary.DiscordModules.ContextMenuActions.closeContextMenu();
+                  // ZeresPluginLibrary.DiscordModules.ContextMenuActions.closeContextMenu();
+				  BdApi.ContextMenu.close();
                   this.deleteEditedMessageFromRecord(messageId, editNum);
                   this.refilterMessages(); // I don't like calling that, maybe figure out a way to animate it collapsing on itself smoothly
                   this.showToast('Deleted!', { type: 'success' });
@@ -4073,7 +4079,8 @@ module.exports = class MessageLoggerV2 {
                 type: 'item',
                 label: 'Unhide Edits',
                 action: () => {
-                  ZeresPluginLibrary.DiscordModules.ContextMenuActions.closeContextMenu();
+                  // ZeresPluginLibrary.DiscordModules.ContextMenuActions.closeContextMenu();
+				  BdApi.ContextMenu.close();
                   record.edits_hidden = false;
                   this.saveData();
                   this.showToast('Unhidden!', { type: 'success' });
@@ -4086,7 +4093,8 @@ module.exports = class MessageLoggerV2 {
               type: 'item',
               label: 'Remove From Log',
               action: () => {
-                ZeresPluginLibrary.DiscordModules.ContextMenuActions.closeContextMenu();
+                // ZeresPluginLibrary.DiscordModules.ContextMenuActions.closeContextMenu();
+				BdApi.ContextMenu.close();
                 let invalidatedChannelCache = false;
                 if ((record.edit_history && !record.edits_hidden) || (record.delete_data && !record.delete_data.hidden)) this.invalidateChannelCache((invalidatedChannelCache = record.message.channel_id));
                 this.deleteMessageFromRecords(messageId);
@@ -4111,7 +4119,8 @@ module.exports = class MessageLoggerV2 {
               type: 'item',
               label: 'Copy Message ID',
               action: () => {
-                ZeresPluginLibrary.DiscordModules.ContextMenuActions.closeContextMenu();
+                // ZeresPluginLibrary.DiscordModules.ContextMenuActions.closeContextMenu();
+				BdApi.ContextMenu.close();
                 this.nodeModules.electron.clipboard.writeText(messageId); // todo: store electron or writeText somewhere?
                 this.showToast('Copied!', { type: 'success' });
               }
@@ -4120,7 +4129,8 @@ module.exports = class MessageLoggerV2 {
               type: 'item',
               label: 'Copy Author ID',
               action: () => {
-                ZeresPluginLibrary.DiscordModules.ContextMenuActions.closeContextMenu();
+                // ZeresPluginLibrary.DiscordModules.ContextMenuActions.closeContextMenu();
+				BdApi.ContextMenu.close();
                 this.nodeModules.electron.clipboard.writeText(message.author.id);
                 this.showToast('Copied!', { type: 'success' });
               }
