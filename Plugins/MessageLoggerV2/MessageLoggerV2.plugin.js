@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.3.3
+ * @version 2.3.4
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -43,7 +43,7 @@ module.exports = class MessageLoggerV2 {
   }
   getVersion() {
 	// this.alreadyTestedForUpdate = false;
-    return '2.3.3';
+    return '2.3.4';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
@@ -5106,9 +5106,9 @@ module.exports = class MessageLoggerV2 {
       }]));
     }));
 
-    this.unpatches.push(BdApi.ContextMenu.patch('gdm-context', (ret, props) => {
+    this.unpatches.push(BdApi.ContextMenu.patch('channel-context', (ret, props) => {
       const menu = ZeresPluginLibrary.Utilities.getNestedProp(
-        ZeresPluginLibrary.Utilities.findInReactTree(ret, e => e && e.navId === 'gdm-context'),
+        ZeresPluginLibrary.Utilities.findInReactTree(ret, e => e && e.navId === 'channel-context'),
         'children'
       );
       if (!Array.isArray(menu)) return;
