@@ -1,4 +1,4 @@
-# MessageLogger V2 [<a target="_blank" href="https://davilarek.github.io/MessageLoggerV2-fixed/download/">Download</a>] [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fdavilarek.github.io%2FMessageLoggerV2-fixed%2Fdownload&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=Download+count&edge_flat=true)](https://hits.seeyoufarm.com)
+# MessageLogger V2 [<a target="_blank" href="https://davilarek.github.io/MessageLoggerV2-fixed/download/">Download</a>] [<a target="_blank" href="https://davilarek.github.io/MessageLoggerV2-fixed/download?name=1XenoLib.plugin.js">Download XenoLib</a>] [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fdavilarek.github.io%2FMessageLoggerV2-fixed%2Fdownload&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=Download+count&edge_flat=true)](https://hits.seeyoufarm.com)
 #### Info
 The MLV2 was created by Lighty. I just fixed it.
 
