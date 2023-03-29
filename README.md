@@ -16,6 +16,7 @@ All of his plugins are available for easy downloading on his website.
 - Message removed/edited notification???
 - Saving images to image cache directory
 - Context menus
+- Color of "Remove From Log"
 
 ## What's to be fixed:
 - Memory leaks
