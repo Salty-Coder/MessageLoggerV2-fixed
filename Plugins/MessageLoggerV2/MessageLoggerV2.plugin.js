@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.5
+ * @version 2.5.3
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -43,7 +43,7 @@ module.exports = class MessageLoggerV2 {
   }
   getVersion() {
 	// this.alreadyTestedForUpdate = false;
-    return '2.5';
+    return '2.5.3';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
@@ -2985,6 +2985,7 @@ module.exports = class MessageLoggerV2 {
         if (dispatch.type === 'MESSAGE_DELETE') {
           const deleted = (this.tempEditedMessageRecord[dispatch.id] && this.tempEditedMessageRecord[dispatch.id].message) || this.getCachedMessage(dispatch.id, dispatch.channelId);
           if (!deleted || (deleted.type !== 0 && deleted.type !== 19 && deleted.type !== 20)) return callDefault(...args); // nothing we can do past this point..
+		  if (deleted.flags == 64) return callDefault(...args);
           if (!this.tools.isMentioned(deleted, this.localUser.id)) return callDefault(...args);
           const record = this.messageRecord[dispatch.id];
           if ((!this.selectedChannel || this.selectedChannel.id != channel.id) && (guild ? this.settings.toastToggles.ghostPings : this.settings.toastTogglesDMs.ghostPings) && (!record || !record.ghost_pinged)) {
@@ -3129,6 +3130,7 @@ module.exports = class MessageLoggerV2 {
         }
 
         if (deleted.type !== 0 && deleted.type !== 19 && (deleted.type !== 20 || (deleted.flags & 64) === 64)) return callDefault(...args);
+		if (deleted.flags == 64) return callDefault(...args); // here just in case
 
         if (this.settings.showDeletedCount) {
           if (!this.deletedChatMessagesCount[channel.id]) this.deletedChatMessagesCount[channel.id] = 0;
