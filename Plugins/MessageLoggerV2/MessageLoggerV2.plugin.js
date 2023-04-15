@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.5.3
+ * @version 2.5.4
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -43,7 +43,7 @@ module.exports = class MessageLoggerV2 {
   }
   getVersion() {
 	// this.alreadyTestedForUpdate = false;
-    return '2.5.3';
+    return '2.5.4';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
@@ -3715,7 +3715,7 @@ module.exports = class MessageLoggerV2 {
 	this.createModal.confirmationModal = {};
 	this.createModal.confirmationModal.Sizes = ZLibrary.WebpackModules.getByProps("Header", "Footer").Sizes;
 	this.ModalStack = ZLibrary.DiscordModules.ModalActions;
-	let modalsApi = BdApi.Webpack.getModule(m => Object.values(m).some(m=>m?.toString?.().includes("onCloseCallback") && m?.toString?.().includes("Layer")));
+	let modalsApi = BdApi.Webpack.getModule(m => Object.values(m).some(m2=>m2?.toString?.().includes("onCloseCallback") && m2?.toString?.().includes("Layer") && !m?.Anchor));
     // this._modalsApiUnsubcribe = (this.ModalStack.modalsApi || this.ModalStack.useModalsStore).subscribe(_ => {
     this._modalsApiUnsubcribe = Object.values(modalsApi).flat().find(obj => typeof obj.subscribe === 'function')?.subscribe(_ => {
       // if (this.menu.open && !this.ModalStack.hasModalOpen(this.style.menu)) {
@@ -3725,7 +3725,7 @@ module.exports = class MessageLoggerV2 {
 	  // let modalOpen = modals.filter(x=>x.key == this.menu.modalMain).length != 0;
 	  setTimeout(() => {
 		  // let modals = BdApi.Webpack.getModule(m => Object.values(m).some(m=>m?.toString().includes("onCloseCallback") && m?.toString().includes("Layer"))).s9.getState().default;
-		  let modalsApi = BdApi.Webpack.getModule(m => Object.values(m).some(m=>m?.toString?.().includes("onCloseCallback") && m?.toString?.().includes("Layer")));
+		  let modalsApi = BdApi.Webpack.getModule(m => Object.values(m).some(m2=>m2?.toString?.().includes("onCloseCallback") && m2?.toString?.().includes("Layer") && !m?.Anchor));
 		  let modals = Object.values(modalsApi).flat().find(obj => typeof obj.getState === 'function')?.getState().default;
 		  let modalOpen = modals.filter(x=>x.key == this.menu.modalMain).length != 0;
 		  if (this.menu.open && !modalOpen) {
