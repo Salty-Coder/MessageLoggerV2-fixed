@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.5.4.1
+ * @version 2.5.5
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -43,7 +43,7 @@ module.exports = class MessageLoggerV2 {
   }
   getVersion() {
 	// this.alreadyTestedForUpdate = false;
-    return '2.5.4.1';
+    return '2.5.5';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
@@ -5099,7 +5099,7 @@ module.exports = class MessageLoggerV2 {
         addElement(
           `Add to Notification Blacklist`,
           () => {
-            this.settings.notificationWhitelist.push(id);
+            this.settings.notificationBlacklist.push(id);
             this.saveSettings();
             this.showToast('Added!', { type: 'success' });
           }
@@ -5117,7 +5117,7 @@ module.exports = class MessageLoggerV2 {
           `Move to Notification Blacklist`,
           () => {
             this.settings.notificationWhitelist.splice(notifWhitelistIdx, 1);
-            this.settings.notificationWhitelist.push(id);
+            this.settings.notificationBlacklist.push(id);
             this.saveSettings();
             this.showToast('Moved!', { type: 'success' });
           }
@@ -5126,7 +5126,7 @@ module.exports = class MessageLoggerV2 {
         addElement(
           `Remove From Notification Blacklist`,
           () => {
-            this.settings.notificationWhitelist.splice(notifBlacklistIdx, 1);
+            this.settings.notificationBlacklist.splice(notifBlacklistIdx, 1);
             this.saveSettings();
             this.showToast('Removed!', { type: 'success' });
           }
@@ -5134,7 +5134,7 @@ module.exports = class MessageLoggerV2 {
         addElement(
           `Move to Notification Whitelist`,
           () => {
-            this.settings.notificationWhitelist.splice(notifBlacklistIdx, 1);
+            this.settings.notificationBlacklist.splice(notifBlacklistIdx, 1);
             this.settings.notificationWhitelist.push(id);
             this.saveSettings();
             this.showToast('Moved!', { type: 'success' });
@@ -5752,7 +5752,7 @@ module.exports = class MessageLoggerV2 {
         addElement(
           `Add to Notification Blacklist`,
           () => {
-            this.settings.notificationWhitelist.push(id);
+            this.settings.notificationBlacklist.push(id);
             this.saveSettings();
             this.showToast('Added!', { type: 'success' });
           },
@@ -5772,7 +5772,7 @@ module.exports = class MessageLoggerV2 {
           `Move to Notification Blacklist`,
           () => {
             this.settings.notificationWhitelist.splice(notifWhitelistIdx, 1);
-            this.settings.notificationWhitelist.push(id);
+            this.settings.notificationBlacklist.push(id);
             this.saveSettings();
             this.showToast('Moved!', { type: 'success' });
           },
@@ -5782,7 +5782,7 @@ module.exports = class MessageLoggerV2 {
         addElement(
           `Remove From Notification Blacklist`,
           () => {
-            this.settings.notificationWhitelist.splice(notifBlacklistIdx, 1);
+            this.settings.notificationBlacklist.splice(notifBlacklistIdx, 1);
             this.saveSettings();
             this.showToast('Removed!', { type: 'success' });
           },
@@ -5791,7 +5791,7 @@ module.exports = class MessageLoggerV2 {
         addElement(
           `Move to Notification Whitelist`,
           () => {
-            this.settings.notificationWhitelist.splice(notifBlacklistIdx, 1);
+            this.settings.notificationBlacklist.splice(notifBlacklistIdx, 1);
             this.settings.notificationWhitelist.push(id);
             this.saveSettings();
             this.showToast('Moved!', { type: 'success' });
