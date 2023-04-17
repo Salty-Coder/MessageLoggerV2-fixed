@@ -23,6 +23,7 @@ All of his plugins are available for easy downloading on his website.
 - Restore original modal handling for "Open logs"
 - Edited message content formatting
 - [#5](https://github.com/Davilarek/MessageLoggerV2-fixed/issues/5)
+- Image cache server because apparently Discord removed most of the https module
 
 ## What's custom:
 - Support for embed images (thanks for idea @Ansemik_CZE)
