@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.5.5
+ * @version 2.5.7
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -43,7 +43,7 @@ module.exports = class MessageLoggerV2 {
   }
   getVersion() {
 	// this.alreadyTestedForUpdate = false;
-    return '2.5.5';
+    return '2.5.7';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
@@ -4837,6 +4837,12 @@ module.exports = class MessageLoggerV2 {
     const loadMessages = () => {
       loadAttempts++;
       try {
+		/* really bad code start */
+		let tabBar = document.getElementById(`${this.style.menuTabBar}`);
+		// 						  main tab part  dom wrapper  react wrapper  header
+		let tabBarHeader = tabBar.parentElement.parentElement.parentElement.parentElement;
+		tabBarHeader.style.width = "100%";
+		/* really bad code end */
         this.refilterMessages();
       } catch (e) {
         if (loadAttempts > 4) {
