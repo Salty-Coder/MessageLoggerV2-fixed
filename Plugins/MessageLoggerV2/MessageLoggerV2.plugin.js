@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.5.7
+ * @version 2.5.8
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -43,7 +43,7 @@ module.exports = class MessageLoggerV2 {
   }
   getVersion() {
 	// this.alreadyTestedForUpdate = false;
-    return '2.5.7';
+    return '2.5.8';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
@@ -610,7 +610,8 @@ module.exports = class MessageLoggerV2 {
       isBlocked: ZeresPluginLibrary.WebpackModules.getByProps('isBlocked').isBlocked,
       createMomentObject: ZeresPluginLibrary.WebpackModules.getByProps('createFromInputFallback'),
       isMentioned: (e, id) => isMentioned({ userId: id, channelId: e.channel_id, mentionEveryone: e.mentionEveryone || e.mention_everyone, mentionUsers: e.mentions.map(e => e.id || e), mentionRoles: e.mentionRoles || e.mention_roles }),
-      DiscordUtils: ZeresPluginLibrary.WebpackModules.getByProps('bindAll', 'debounce')
+      DiscordUtils: ZeresPluginLibrary.WebpackModules.getByProps('bindAll', 'debounce'),
+	  SimpleMarkdown: ZeresPluginLibrary.DiscordModules.SimpleMarkdown,
     };
 
     this.createButton.classes = {
@@ -3583,8 +3584,9 @@ module.exports = class MessageLoggerV2 {
 					  // for (let ii = 0; ii < record.edit_history.length; ii++) {
 						const hist = record.edit_history[editNum];
 						// const editedMarkup = this.formatMarkup(hist.content, message.channel_id);
-						const editedMarkup = document.createElement("p");
-						editedMarkup.textContent = hist.content;
+						// const editedMarkup = document.createElement("p");
+						const editedMarkup = new DOMParser().parseFromString(this.tools.SimpleMarkdown.markdownToHtml(hist.content), 'text/html').documentElement.children[1].children[0];
+						// editedMarkup.textContent = hist.content;
 						editedMarkup.style.margin = "0";
 						editedMarkup.style.filter = "brightness(70%)";
 						editedMarkup.insertAdjacentHTML('beforeend', `<time class="${this.multiClasses.edited}">(edited)</time>`); // TODO, change this
