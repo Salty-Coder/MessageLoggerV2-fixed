@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.5.8
+ * @version 2.5.9
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -43,7 +43,7 @@ module.exports = class MessageLoggerV2 {
   }
   getVersion() {
 	// this.alreadyTestedForUpdate = false;
-    return '2.5.8';
+    return '2.5.9';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
@@ -411,6 +411,8 @@ module.exports = class MessageLoggerV2 {
     }
 
     if (settingsChanged) this.saveSettings();
+
+	this.translatedEdited = ZLibrary.WebpackModules.find(m => m.Messages && m._languages).Messages.MESSAGE_EDITED;
 
     this.nodeModules = {
       electron: require('electron'),
@@ -3589,7 +3591,7 @@ module.exports = class MessageLoggerV2 {
 						// editedMarkup.textContent = hist.content;
 						editedMarkup.style.margin = "0";
 						editedMarkup.style.filter = "brightness(70%)";
-						editedMarkup.insertAdjacentHTML('beforeend', `<time class="${this.multiClasses.edited}">(edited)</time>`); // TODO, change this
+						editedMarkup.insertAdjacentHTML('beforeend', `<time class="${this.multiClasses.edited}">(` + this.translatedEdited + `)</time>`); // TODO, change this
 						// editedMarkup.insertAdjacentHTML('beforeend', `<span class="${ZLibrary.WebpackModules.getByProps("cozy", "repliedMessage", "contents")["timestamp"]}"><time><span class="edited-1v5nT8">(edited)</span></time></span>`); // TODO, change this
 						new ZeresPluginLibrary.Tooltip(editedMarkup, 'Edited at ' + (typeof hist.time === 'string' ? hist.time : this.createTimeStamp(hist.time)), { side: 'left' });
 						editedMarkup.classList.add(this.style.edited);
@@ -4273,7 +4275,7 @@ module.exports = class MessageLoggerV2 {
           for (let ii = 0; ii < record.edit_history.length; ii++) {
             const hist = record.edit_history[ii];
             const editedMarkup = this.formatMarkup(hist.content, message.channel_id);
-            editedMarkup.insertAdjacentHTML('beforeend', `<time class="${this.multiClasses.edited}">(edited)</time>`); // TODO, change this
+            editedMarkup.insertAdjacentHTML('beforeend', `<time class="${this.multiClasses.edited}">(` + this.translatedEdited + `)</time>`); // TODO, change this
             new ZeresPluginLibrary.Tooltip(editedMarkup, 'Edited at ' + (typeof hist.time === 'string' ? hist.time : this.createTimeStamp(hist.time)), { side: 'left' });
             editedMarkup.classList.add(this.style.edited);
             editedMarkup.edit = ii;
