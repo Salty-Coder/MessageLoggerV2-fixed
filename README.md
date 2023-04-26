@@ -20,7 +20,6 @@ All of his plugins are available for easy downloading on his website.
 
 ## What's to be fixed:
 - Memory leaks
-- Restore original modal handling for "Open logs"
 - ~~Edited message content formatting~~ - ([partially](https://github.com/Davilarek/MessageLoggerV2-fixed/issues/12)) fixed in [version 2.5.8](https://github.com/Davilarek/MessageLoggerV2-fixed/commit/cc3b81c9bfae5123014b8bfb361976c5d4836301)
 - [#5](https://github.com/Davilarek/MessageLoggerV2-fixed/issues/5)
 - Image cache server because apparently Discord removed most of the https module ([#14](https://github.com/Davilarek/MessageLoggerV2-fixed/issues/14))
