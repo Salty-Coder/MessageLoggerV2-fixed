@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.6
+ * @version 2.6.1
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -43,7 +43,7 @@ module.exports = class MessageLoggerV2 {
   }
   getVersion() {
 	// this.alreadyTestedForUpdate = false;
-    return '2.6';
+    return '2.6.1';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
@@ -1835,12 +1835,13 @@ module.exports = class MessageLoggerV2 {
     // div.appendChild(this.createButton('Donate', () => this.nodeModules.electron.shell.openExternal('https://paypal.me/lighty13')));
     div.appendChild(
       this.createButton('Support server', () => {
-        ZeresPluginLibrary.DiscordModules.LayerManager.popLayer();
-        if (this.tools.getServer('389049952732446731')) {
-          ZeresPluginLibrary.DiscordModules.GuildActions.transitionToGuildSync('389049952732446731');
-        } else {
-          ZeresPluginLibrary.DiscordModules.InviteActions.openNativeAppModal('NYvWdN5');
-        }
+        // ZeresPluginLibrary.DiscordModules.LayerManager.popLayer();
+        // if (this.tools.getServer('389049952732446731')) {
+          // ZeresPluginLibrary.DiscordModules.GuildActions.transitionToGuildSync('389049952732446731');
+        // } else {
+          // ZeresPluginLibrary.DiscordModules.InviteActions.openNativeAppModal('NYvWdN5');
+        // }
+		BdApi.UI.showToast("This doesn't work on purpose.");
       })
     );
     div.appendChild(this.createButton('Help', () => this.showLoggerHelpModal()));
@@ -2562,11 +2563,19 @@ module.exports = class MessageLoggerV2 {
     if (callback) ret.addEventListener('click', callback);
     return ret;
   }
+  getKeyByValue(obj, value) {
+	  for (const key in obj) {
+		if (obj.hasOwnProperty(key) && obj[key] === value) {
+		  return key;
+		}
+	  }
+  }
   createModal(options, image, name) {
     // const modal = image ? this.createModal.imageModal : this.createModal.confirmationModal;
 	const modal = "div";
 	if (options.size)
-		options.size = Object.keys(ZLibrary.WebpackModules.getByProps("Header", "Footer").Sizes)[Object.values(ZLibrary.WebpackModules.getByProps("Header", "Footer").Sizes).indexOf(options.size)].toLowerCase();
+		options.size = this.getKeyByValue(this.createModal.confirmationModal.Sizes, options.size).toLowerCase();
+	// options.size = Object.keys(ZLibrary.WebpackModules.getByProps("Header", "Footer").Sizes)[Object.values(ZLibrary.WebpackModules.getByProps("Header", "Footer").Sizes).indexOf(options.size)].toLowerCase();
 	// this.ModalStack.openModal(props => ZeresPluginLibrary.DiscordModules.React.createElement(modal, Object.assign({}, options, props, options.onClose ? { onClose: options.onClose } : {})), { modalKey: name });
     // this.menu.modalMain = ZLibrary.DiscordModules.ModalActions.openModal(props => ZeresPluginLibrary.DiscordModules.React.createElement(modal, Object.assign({}, options, props, options.onClose ? { onClose: options.onClose } : {})), { modalKey: name });
     // this.menu.modalMain = BdApi.showConfirmationModal("sussy", ZeresPluginLibrary.DiscordModules.React.createElement(modal, Object.assign({}, options, options.onClose ? { onClose: options.onClose } : {})));
@@ -3727,6 +3736,7 @@ module.exports = class MessageLoggerV2 {
 	this.ModalStack = ZLibrary.DiscordModules.ModalActions;
 	let modalsApi = BdApi.Webpack.getModule(m => Object.values(m).some(m2=>m2?.toString?.().includes("onCloseCallback") && m2?.toString?.().includes("Layer") && !m?.Anchor));
     // this._modalsApiUnsubcribe = (this.ModalStack.modalsApi || this.ModalStack.useModalsStore).subscribe(_ => {
+	this.isModalOpen = BdApi.findModuleByProps("openModal", "hasModalOpen").hasModalOpen;
     this._modalsApiUnsubcribe = Object.values(modalsApi).flat().find(obj => typeof obj.subscribe === 'function')?.subscribe(_ => {
       // if (this.menu.open && !this.ModalStack.hasModalOpen(this.style.menu)) {
 	  // let modals = BdApi.Webpack.getModule(m => Object.values(m).some(m=>m?.toString().includes("onCloseCallback") && m?.toString().includes("Layer"))).s9.getState().default.map(x=>x.key);
@@ -3735,9 +3745,10 @@ module.exports = class MessageLoggerV2 {
 	  // let modalOpen = modals.filter(x=>x.key == this.menu.modalMain).length != 0;
 	  setTimeout(() => {
 		  // let modals = BdApi.Webpack.getModule(m => Object.values(m).some(m=>m?.toString().includes("onCloseCallback") && m?.toString().includes("Layer"))).s9.getState().default;
-		  let modalsApi = BdApi.Webpack.getModule(m => Object.values(m).some(m2=>m2?.toString?.().includes("onCloseCallback") && m2?.toString?.().includes("Layer") && !m?.Anchor));
-		  let modals = Object.values(modalsApi).flat().find(obj => typeof obj.getState === 'function')?.getState().default;
-		  let modalOpen = modals.filter(x=>x.key == this.style.menu).length != 0;
+		  // let modalsApi = BdApi.Webpack.getModule(m => Object.values(m).some(m2=>m2?.toString?.().includes("onCloseCallback") && m2?.toString?.().includes("Layer") && !m?.Anchor));
+		  // let modals = Object.values(modalsApi).flat().find(obj => typeof obj.getState === 'function')?.getState().default;
+		  // let modalOpen = modals.filter(x=>x.key == this.style.menu).length != 0;
+		  let modalOpen = this.isModalOpen(this.style.menu);
 		  if (this.menu.open && !modalOpen) {
 			this.menu.filter = '';
 			this.menu.open = false;
