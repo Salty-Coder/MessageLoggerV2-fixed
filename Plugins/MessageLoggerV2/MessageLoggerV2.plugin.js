@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.6.2
+ * @version 2.6.3
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -43,7 +43,7 @@ module.exports = class MessageLoggerV2 {
   }
   getVersion() {
 	// this.alreadyTestedForUpdate = false;
-    return '2.6.2';
+    return '2.6.3';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
@@ -3602,7 +3602,7 @@ module.exports = class MessageLoggerV2 {
 						const hist = record.edit_history[editNum];
 						// const editedMarkup = this.formatMarkup(hist.content, message.channel_id);
 						// const editedMarkup = document.createElement("p");
-						const editedMarkup = new DOMParser().parseFromString(this.tools.SimpleMarkdown.markdownToHtml(hist.content), 'text/html').documentElement.children[1].children[0];
+						const editedMarkup = hist.content == '' ? document.createElement("p") : new DOMParser().parseFromString(this.tools.SimpleMarkdown.markdownToHtml(hist.content), 'text/html').documentElement.children[1].children[0];
 						// editedMarkup.textContent = hist.content;
 						editedMarkup.style.margin = "0";
 						editedMarkup.style.filter = "brightness(70%)";
