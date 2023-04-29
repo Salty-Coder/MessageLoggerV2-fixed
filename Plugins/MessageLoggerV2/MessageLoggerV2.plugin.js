@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.6.3
+ * @version 2.6.4
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -43,7 +43,7 @@ module.exports = class MessageLoggerV2 {
   }
   getVersion() {
 	// this.alreadyTestedForUpdate = false;
-    return '2.6.3';
+    return '2.6.4';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
@@ -620,6 +620,7 @@ module.exports = class MessageLoggerV2 {
       isMentioned: (e, id) => isMentioned({ userId: id, channelId: e.channel_id, mentionEveryone: e.mentionEveryone || e.mention_everyone, mentionUsers: e.mentions.map(e => e.id || e), mentionRoles: e.mentionRoles || e.mention_roles }),
       DiscordUtils: ZeresPluginLibrary.WebpackModules.getByProps('bindAll', 'debounce'),
 	  SimpleMarkdown: ZeresPluginLibrary.DiscordModules.SimpleMarkdown,
+	  parserNew: ZeresPluginLibrary.WebpackModules.getByProps("defaultRules", "parse").parse,
     };
 
     this.createButton.classes = {
@@ -3580,7 +3581,7 @@ module.exports = class MessageLoggerV2 {
 			)
 		  );
 		  
-		  const createEditedMessage = (edit, editNum, isSingular, noSuffix) =>
+		  const createEditedMessage2 = (edit, editNum, isSingular, noSuffix) =>
 		  ZeresPluginLibrary.DiscordModules.React.createElement(
 			XenoLib.ReactComponents.ErrorBoundary,
 			{ label: 'Edit history' },
@@ -3641,6 +3642,35 @@ module.exports = class MessageLoggerV2 {
 				}
 			)
 		  );
+		  
+		  const createEditedMessage = (edit, editNum, isSingular, noSuffix) =>
+          ZeresPluginLibrary.DiscordModules.React.createElement(
+            XenoLib.ReactComponents.ErrorBoundary,
+            { label: 'Edit history' },
+            ZeresPluginLibrary.DiscordModules.React.createElement(
+              Tooltip,
+              {
+                text: !!record.delete_data ? null : 'Edited: ' + this.createTimeStamp(edit.time),
+                position: 'left',
+                hideOnClick: true
+              },
+              _ =>
+                ZeresPluginLibrary.DiscordModules.React.createElement(
+                  'div',
+                  {
+                    ..._,
+                    className: XenoLib.joinClassNames({ [this.style.editedCompact]: props.compact && !isSingular, [this.style.edited]: !isSingular }),
+                    editNum
+                  },
+				  this.tools.parserNew(edit.content),
+                  noSuffix
+                    ? null
+                    : ZeresPluginLibrary.DiscordModules.React.createElement(SuffixEdited, {
+                      timestamp: this.tools.createMomentObject(edit.time)
+                    })
+                )
+            )
+          );
 		  
         ret.props.className = XenoLib.joinClassNames(ret.props.className, this.style.edited);
         const modifier = this.editModifiers[props.message.id];
