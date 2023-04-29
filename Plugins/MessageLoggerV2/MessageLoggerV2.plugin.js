@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.6.5.1
+ * @version 2.6.6
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -43,7 +43,7 @@ module.exports = class MessageLoggerV2 {
   }
   getVersion() {
 	// this.alreadyTestedForUpdate = false;
-    return '2.6.5.1';
+    return '2.6.6';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
@@ -422,6 +422,60 @@ module.exports = class MessageLoggerV2 {
       fs: require('fs'),
       path: require('path')
     };
+	
+	this.imageCacheServerSimulator = {
+		"cached": {},
+		"get": function (path) {
+			if (!this.cached[path])
+			{
+				try {
+					const parsedUrl = new URL(path);
+					const parsedFile = require('path').parse(parsedUrl.pathname);
+					
+					let pathname = require('path').join(this.getSettings().imageCacheDir, parsedFile.base);
+					
+					const messageId = parsedUrl.hash.split(",")[2];
+					const attachmentId = parsedUrl.hash.split(",")[1];
+					
+					if (!require("fs").existsSync(pathname))
+						pathname = require('path').join(this.resolveNewCachePath({ channelId: parsedUrl.hash.split(",")[0].split("#")[1] }) + "/", attachmentId + ` (${messageId})` + parsedFile.ext);
+					const image = require('fs').readFileSync(pathname, "");
+					// const base64Image = Buffer.from(image).toString('base64');
+					// const dataUri = `data:image/jpeg;base64,${base64Image}`;
+					const arrayBuffer = image.buffer.slice(
+					  image.byteOffset,
+					  image.byteOffset + image.byteLength
+					);
+					const blob = new Blob([arrayBuffer], { type: 'image/' + parsedFile.ext.split(".")[1] });
+					const dataUri = URL.createObjectURL(blob);
+					this.cached[path] = dataUri;
+				}
+				catch (e)
+				{
+					console.log(e);
+					return path;
+				}
+			}
+			return this.cached[path];
+		},
+		"getSettings": () => { return this.settings; },
+		"resolveNewCachePath": (options) => {
+			let savePath = this.settings.newCacheAllImagesPath && this.settings.newCacheAllImagesPath != '' && require("fs").existsSync(this.settings.newCacheAllImagesPath) ? this.settings.newCacheAllImagesPath : this.settings.imageCacheDir;
+
+			// const { serverId }
+			const { channelId } = options;
+			const channelData = ZLibrary.DiscordModules.ChannelStore.getChannel(channelId);
+			const serverId = channelData.guild_id;
+			let serverNameRaw = serverId != null ? ZLibrary.DiscordModules.GuildStore.getGuild(serverId).name : "DMs";
+			let channelNameRaw = serverId != null ? channelData.name : channelData.recipients.length == 1 ? channelData.rawRecipients[0].username : "Unknown DM";
+					
+			let serverName = serverNameRaw.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9_. -]/g, "");
+			let channelName = channelNameRaw.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9_. -]/g, "");
+					
+			let filePath = savePath + "/" + ( serverId != null ? serverId + " (" + serverName + ")" : serverName ) + "/" + channelId + " (" + channelName + ")";
+			return filePath;
+		},
+	};
 
 	this.nodeModules.electron.clipboard = {};
 	this.nodeModules.electron.clipboard.write = DiscordNative.clipboard.copy;
@@ -520,7 +574,7 @@ module.exports = class MessageLoggerV2 {
         imageCacheDirFailure();
       }
     }
-
+	/*
     if (!this._imageCacheServer) {
       class ImageCacheServer {
         constructor(imagePath, name) {
@@ -570,6 +624,11 @@ module.exports = class MessageLoggerV2 {
       this._imageCacheServer = new ImageCacheServer(this.settings.imageCacheDir, this.getName());
     }
     this._imageCacheServer.start();
+	*/
+	this._imageCacheServer = {
+		// "start": () => {},
+		"stop": () => {},
+	};
 
     defaultConstruct = undefined;
 
@@ -4380,7 +4439,8 @@ module.exports = class MessageLoggerV2 {
               img.src = `https://i.clouds.tf/q2vy/r8q6.png#${record.message.channel_id},${img.id}`;
               img.width = 200;
             } else {
-              img.src = 'http://localhost:7474/' + attachmentId + filename.match(/\.[0-9a-z]+$/i)[0] + `#${record.message.channel_id},${img.id}`;
+              // img.src = 'http://localhost:7474/' + attachmentId + filename.match(/\.[0-9a-z]+$/i)[0] + `#${record.message.channel_id},${img.id}`;
+              img.src = this.imageCacheServerSimulator.get('http://localhost:7474/' + attachmentId + filename.match(/\.[0-9a-z]+$/i)[0] + `#${record.message.channel_id},${img.id},${img.messageId}`);
               img.width = 256;
             }
             img.addEventListener('click', e => {
@@ -4460,7 +4520,8 @@ module.exports = class MessageLoggerV2 {
                       if (err || res.statusCode != 404) return;
 					  // record.message.attachments[idx]["original_url"] = record.message.attachments[idx].url
                       record.message.attachments[idx].url = 'ERROR';
-                      img.src = 'http://localhost:7474/' + attachment.id + attachment.filename.match(/\.[0-9a-z]+$/)[0];
+                      // img.src = 'http://localhost:7474/' + attachment.id + attachment.filename.match(/\.[0-9a-z]+$/)[0];
+                      img.src = this.imageCacheServerSimulator.get('http://localhost:7474/' + attachment.id + attachment.filename.match(/\.[0-9a-z]+$/)[0] + `#${record.message.channel_id},${img.id},${img.messageId}`);
                       img.triedCache = true;
                     } catch (err) {
                       console.error('Failed loading cached image', err.message);
