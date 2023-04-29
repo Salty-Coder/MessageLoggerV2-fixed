@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.6.6
+ * @version 2.6.6.1
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -43,7 +43,7 @@ module.exports = class MessageLoggerV2 {
   }
   getVersion() {
 	// this.alreadyTestedForUpdate = false;
-    return '2.6.6';
+    return '2.6.6.1';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
@@ -463,9 +463,10 @@ module.exports = class MessageLoggerV2 {
 			let savePath = this.settings.newCacheAllImagesPath && this.settings.newCacheAllImagesPath != '' && require("fs").existsSync(this.settings.newCacheAllImagesPath) ? this.settings.newCacheAllImagesPath : this.settings.imageCacheDir;
 
 			// const { serverId }
-			const { channelId } = options;
+			let { channelId, serverId } = options;
 			const channelData = ZLibrary.DiscordModules.ChannelStore.getChannel(channelId);
-			const serverId = channelData.guild_id;
+			if (!serverId)
+				serverId = channelData.guild_id;
 			let serverNameRaw = serverId != null ? ZLibrary.DiscordModules.GuildStore.getGuild(serverId).name : "DMs";
 			let channelNameRaw = serverId != null ? channelData.name : channelData.recipients.length == 1 ? channelData.rawRecipients[0].username : "Unknown DM";
 					
@@ -2784,6 +2785,7 @@ module.exports = class MessageLoggerV2 {
 					require("fs").writeFileSync(this.settings.imageCacheDir + `/${attachmentId}${fileExtension}`, finalData, { encoding: null });
 				else
 				{
+					/*
 					let savePath = this.settings.newCacheAllImagesPath && this.settings.newCacheAllImagesPath != '' && require("fs").existsSync(this.settings.newCacheAllImagesPath) ? this.settings.newCacheAllImagesPath : this.settings.imageCacheDir;
 					// todo make it readable
 					// let serverNameRaw = serverId != null ? ZLibrary.DiscordModules.GuildStore.getGuild(serverId).name : ZLibrary.DiscordModules.ChannelStore.getChannel(channelId).recipients.length == 1 ? ZLibrary.DiscordModules.ChannelStore.getChannel(channelId).rawRecipients[0].username : "Unknown DM";
@@ -2794,6 +2796,8 @@ module.exports = class MessageLoggerV2 {
 					let channelName = channelNameRaw.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9_. -]/g, "");
 					
 					let filePath = savePath + "/" + ( serverId != null ? serverId + " (" + serverName + ")" : serverName ) + "/" + channelId + " (" + channelName + ")";
+					*/
+					let filePath = this.imageCacheServerSimulator.resolveNewCachePath({ channelId: channelId, serverId: serverId });
 					require("fs").mkdirSync(filePath, { recursive: true });
 					require("fs").writeFileSync(filePath + `/${attachmentId} (${messageId})${fileExtension}`, finalData, { encoding: null });
 				}
