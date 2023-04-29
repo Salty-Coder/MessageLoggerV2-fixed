@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.6.5
+ * @version 2.6.5.1
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -43,7 +43,7 @@ module.exports = class MessageLoggerV2 {
   }
   getVersion() {
 	// this.alreadyTestedForUpdate = false;
-    return '2.6.5';
+    return '2.6.5.1';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
@@ -702,7 +702,7 @@ module.exports = class MessageLoggerV2 {
     // const ImageModal = ZeresPluginLibrary.WebpackModules.getByDisplayName('ImageModal');
 	const ImageModalFilterFunc1 = m2=>m2?.toString?.().includes(".MEDIA_MODAL_CLOSE,");
 	const ImageModalFilterFunc2 = m => Object.values(m).some(ImageModalFilterFunc1);
-    const ImageModal = Object.values(BdApi.findModule(ImageModalFilterFunc2)).filter(ImageModalFilterFunc1)[0];
+    const ImageModal = Object.values(BdApi.Webpack.getModule(ImageModalFilterFunc2)).filter(ImageModalFilterFunc1)[0];
 
     // const { default: MaskedLink } = ZeresPluginLibrary.WebpackModules.find(e => e?.default?.type?.toString()?.includes('default.MASKED_LINK')) || {};
 	const MaskedLink = ZeresPluginLibrary.WebpackModules.find(e => e?.type?.toString()?.includes('.MASKED_LINK')) || {};
