@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.6.4
+ * @version 2.6.5
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -43,7 +43,7 @@ module.exports = class MessageLoggerV2 {
   }
   getVersion() {
 	// this.alreadyTestedForUpdate = false;
-    return '2.6.4';
+    return '2.6.5';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
@@ -699,16 +699,21 @@ module.exports = class MessageLoggerV2 {
     const Modals = ZeresPluginLibrary.WebpackModules.getByProps('ModalRoot');
     const ImageModalClasses = ZeresPluginLibrary.WebpackModules.getByProps('modal', 'image');
 
-    const ImageModal = ZeresPluginLibrary.WebpackModules.getByDisplayName('ImageModal');
+    // const ImageModal = ZeresPluginLibrary.WebpackModules.getByDisplayName('ImageModal');
+	const ImageModalFilterFunc1 = m2=>m2?.toString?.().includes(".MEDIA_MODAL_CLOSE,");
+	const ImageModalFilterFunc2 = m => Object.values(m).some(ImageModalFilterFunc1);
+    const ImageModal = Object.values(BdApi.findModule(ImageModalFilterFunc2)).filter(ImageModalFilterFunc1)[0];
 
-    const { default: MaskedLink } = ZeresPluginLibrary.WebpackModules.find(e => e?.default?.type?.toString()?.includes('default.MASKED_LINK')) || {};
+    // const { default: MaskedLink } = ZeresPluginLibrary.WebpackModules.find(e => e?.default?.type?.toString()?.includes('default.MASKED_LINK')) || {};
+	const MaskedLink = ZeresPluginLibrary.WebpackModules.find(e => e?.type?.toString()?.includes('.MASKED_LINK')) || {};
     const renderLinkComponent = props => ZeresPluginLibrary.DiscordModules.React.createElement(MaskedLink, props);
 
     const MLV2ImageModal = props =>
       ZeresPluginLibrary.DiscordModules.React.createElement(
         Modals.ModalRoot,
         // { className: ImageModalClasses.modal, ...props, size: Modals.ModalSize.DYNAMIC },
-        { className: ImageModalClasses.modal, ...props, size: ZLibrary.WebpackModules.getByProps("Header", "Footer").Sizes.DYNAMIC },
+        // { className: ImageModalClasses.modal, ...props, size: ZLibrary.WebpackModules.getByProps("Header", "Footer").Sizes.LARGE },
+        { className: ImageModalClasses.modal, ...props, size: "dynamic" },
         ZeresPluginLibrary.DiscordModules.React.createElement(
           ImageModal,
           Object.assign(
@@ -2573,9 +2578,25 @@ module.exports = class MessageLoggerV2 {
   }
   createModal(options, image, name) {
     // const modal = image ? this.createModal.imageModal : this.createModal.confirmationModal;
+	const ConfirmationModal = ZLibrary.DiscordModules.ConfirmationModal;
+	const ModalActions = ZLibrary.DiscordModules.ModalActions;
+	const React = ZeresPluginLibrary.DiscordModules.React;
+	const ErrorBoundary = ZLibrary.Components.ErrorBoundary;
+	
+	// const modal = image ? this.createModal.imageModal : "div";
+	const modalType = image ? this.createModal.imageModal : ConfirmationModal;
 	const modal = "div";
 	if (options.size)
 		options.size = this.getKeyByValue(this.createModal.confirmationModal.Sizes, options.size).toLowerCase();
+	
+	if (image)
+	{
+		ModalActions.openModal(props => 
+			ZeresPluginLibrary.DiscordModules.React.createElement(modalType, Object.assign({}, options, props, options.onClose ? { onClose: options.onClose } : {})), { modalKey: name }
+		);
+		return;
+	}
+	
 	// options.size = Object.keys(ZLibrary.WebpackModules.getByProps("Header", "Footer").Sizes)[Object.values(ZLibrary.WebpackModules.getByProps("Header", "Footer").Sizes).indexOf(options.size)].toLowerCase();
 	// this.ModalStack.openModal(props => ZeresPluginLibrary.DiscordModules.React.createElement(modal, Object.assign({}, options, props, options.onClose ? { onClose: options.onClose } : {})), { modalKey: name });
     // this.menu.modalMain = ZLibrary.DiscordModules.ModalActions.openModal(props => ZeresPluginLibrary.DiscordModules.React.createElement(modal, Object.assign({}, options, props, options.onClose ? { onClose: options.onClose } : {})), { modalKey: name });
@@ -2622,11 +2643,7 @@ module.exports = class MessageLoggerV2 {
 	}, {modalKey: key});
 	*/
 	
-	const Markdown = ZLibrary.WebpackModules.find(m => m?.prototype?.render && m.rules);
-	const ConfirmationModal = ZLibrary.DiscordModules.ConfirmationModal;
-	const ModalActions = ZLibrary.DiscordModules.ModalActions;
-	const React = ZeresPluginLibrary.DiscordModules.React;
-	const ErrorBoundary = ZLibrary.Components.ErrorBoundary;
+	// const Markdown = ZLibrary.WebpackModules.find(m => m?.prototype?.render && m.rules);
 	// const emptyFunction = () => {};
 	// const {onConfirm = emptyFunction, onCancel = emptyFunction, confirmText = ZLibrary.DiscordModules.Strings.Modals.okay, cancelText = ZLibrary.DiscordModules.Strings.Modals.cancel, danger = false, key = undefined} = options;
 
@@ -2648,7 +2665,10 @@ module.exports = class MessageLoggerV2 {
 					ModalActions.closeModal(modalKey);
 				});
 			}
-		}, React.createElement(ConfirmationModal, Object.assign({}, options, props, options.onClose ? { onClose: options.onClose } : {}), React.createElement(ErrorBoundary, {}, ZeresPluginLibrary.DiscordModules.React.createElement(modal, { className: options.className, header: options.header, size: options.size }, options.children))));
+		// }, React.createElement(ConfirmationModal, Object.assign({}, options, props, options.onClose ? { onClose: options.onClose } : {}), React.createElement(ErrorBoundary, {}, ZeresPluginLibrary.DiscordModules.React.createElement(modal, { className: options.className, header: options.header, size: options.size }, options.children))));
+		}, React.createElement(modalType, Object.assign({}, options, props, options.onClose ? { onClose: options.onClose } : {}), 
+				React.createElement(ErrorBoundary, {}, 
+					ZeresPluginLibrary.DiscordModules.React.createElement(modal, { className: options.className, header: options.header, size: options.size }, options.children))));
 	}, {modalKey: name});
 	
 	// this.ModalStack.openModal();
@@ -2657,7 +2677,7 @@ module.exports = class MessageLoggerV2 {
 	// this.menu.modalMain = modalKey;
 	// this.menu.modalMain = ZLibrary.DiscordModules.ModalActions.openModal(props => ZeresPluginLibrary.DiscordModules.React.createElement(modal, Object.assign({}, options, props, options.onClose ? { onClose: options.onClose } : {})), { modalKey: name });
 	
-	; modalKey;
+	// ; modalKey;
   }
   getMessageAny(id) {
     const record = this.messageRecord[id];
