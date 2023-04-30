@@ -1,6 +1,6 @@
 /**
  * @name MessageLoggerV2
- * @version 2.6.6.1
+ * @version 2.6.6.2
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
@@ -43,7 +43,7 @@ module.exports = class MessageLoggerV2 {
   }
   getVersion() {
 	// this.alreadyTestedForUpdate = false;
-    return '2.6.6.1';
+    return '2.6.6.2';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
@@ -4907,7 +4907,11 @@ module.exports = class MessageLoggerV2 {
     //messagesDIV.style.display = 'none';
     const onChangeOrder = el => {
       this.settings.reverseOrder = !this.settings.reverseOrder;
+	  // const theElement = document.getElementsByClassName(this.style.menuRoot)[0];
+	  // to me: don't touch filters ever again lol
+	  const theElement = Array.from(Array.from(document.getElementsByClassName(this.style.menuRoot)[0].children).filter(x => !x.id && !x.dir)[0].children).filter(x => x.type == "button")[0];
       // el.target.innerText = 'Sort direction: ' + (!this.settings.reverseOrder ? 'new - old' : 'old - new'); // maybe a func?
+	  theElement.innerText = 'Sort direction: ' + (!this.settings.reverseOrder ? 'new - old' : 'old - new'); // maybe a func?
       this.saveSettings();
       this.refilterMessages();
     };
