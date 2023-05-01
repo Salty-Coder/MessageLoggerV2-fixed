@@ -22,6 +22,7 @@ All of his plugins are available for easy downloading on his website.
 ## What's to be fixed:
 - Memory leaks
 - [#5](https://github.com/Davilarek/MessageLoggerV2-fixed/issues/5)
+- [#16](https://github.com/Davilarek/MessageLoggerV2-fixed/issues/16)
 
 ## What's custom:
 - Support for embed images (thanks for idea @Ansemik_CZE)
