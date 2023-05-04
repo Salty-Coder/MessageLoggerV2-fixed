@@ -3,11 +3,11 @@
  * @description Simple library to complement plugins with shared code without lowering performance. Also adds needed buttons to some plugins.
  * @author 1Lighty
  * @authorId 239513071272329217
- * @version 1.4.11
+ * @version 2.0
  * @invite NYvWdN5
  * @donate https://paypal.me/lighty13
- * @source https://github.com/1Lighty/BetterDiscordPlugins/blob/master/Plugins/1XenoLib.plugin.js
- * @updateUrl https://raw.githubusercontent.com/1Lighty/BetterDiscordPlugins/master/Plugins/1XenoLib.plugin.js
+ * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/1XenoLib.plugin.js
+ * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/1XenoLib.plugin.js
  */
 /*@cc_on
 @if (@_jscript)
@@ -104,12 +104,19 @@ module.exports = (() => {
           discord_id: '239513071272329217',
           github_username: '1Lighty',
           twitter_username: ''
-        }
+        },
+		// {
+          // name: 'Davilarek',
+          // discord_id: '456226577798135808',
+          // github_username: 'Davilarek',
+          // twitter_username: ''
+        // }
+		/* I barely changed anything here */
       ],
-      version: '1.4.11',
+      version: '2.0', // don't interfere
       description: 'Simple library to complement plugins with shared code without lowering performance. Also adds needed buttons to some plugins.',
-      github: 'https://github.com/1Lighty',
-      github_raw: 'https://raw.githubusercontent.com/1Lighty/BetterDiscordPlugins/master/Plugins/1XenoLib.plugin.js'
+      // github: 'https://github.com/1Lighty',
+      github_raw: 'https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/1XenoLib.plugin.js'
     },
     changelog: [
       {
@@ -370,6 +377,11 @@ module.exports = (() => {
     const Patcher = XenoLib.createSmartPatcher(Api.Patcher);
 
     const LibrarySettings = XenoLib.loadData(config.info.name, 'settings', DefaultLibrarySettings);
+	LibrarySettings.addons.extra = false;
+	LibrarySettings.userCounter.enabled = false;
+	LibrarySettings.userCounter.lastSubmission = 0;
+	LibrarySettings.userCounter.enableTime = 0;
+	PluginUtilities.saveSettings(this.name, LibrarySettings);
 
     try {
       // 1 week before the API will be enabled.
@@ -2432,7 +2444,7 @@ module.exports = (() => {
                 let plugin = BdApi.Plugins.get(name);
                 if (plugin && plugin.instance) plugin = plugin.instance;
                 // eslint-disable-next-line no-loop-func
-                const req = https.request(`https://raw.githubusercontent.com/1Lighty/BetterDiscordPlugins/master/Plugins/${name}/${name}.plugin.js`, { headers: { origin: 'discord.com' } }, res => {
+                const req = https.request(`https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/${name}/${name}.plugin.js`, { headers: { origin: 'discord.com' } }, res => {
                   let body = '';
                   // eslint-disable-next-line no-void
                   res.on('data', chunk => ((body += chunk), void 0));
