@@ -5,7 +5,6 @@
  * @authorId 239513071272329217
  * @version 2.0
  * @invite NYvWdN5
- * @donate https://paypal.me/lighty13
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/1XenoLib.plugin.js
  * @updateUrl https://raw.githubusercontent.com/Davilarek/MessageLoggerV2-fixed/master/Plugins/1XenoLib.plugin.js
  */
@@ -1428,7 +1427,7 @@ module.exports = (() => {
         try {
           return Markdown.parse;
         } catch (e) {
-          Logger.stacktrace('Failed to get even basic parser', e);
+          Logger.stacktrace('Failed to even get basic parser', e);
           return e => e;
         }
       }
