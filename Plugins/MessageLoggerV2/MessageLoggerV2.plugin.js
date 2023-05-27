@@ -1,9 +1,9 @@
 /**
  * @name MessageLoggerV2
- * @version 2.6.6.2.9
+ * @version 2.6.6.2.99
  * @invite NYvWdN5
  * @source https://github.com/Davilarek/MessageLoggerV2-fixed/blob/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
- * @updateUrl https://gitea.slowb.ro/Davilarek/MessageLoggerV2-fixed/raw/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
+ * @updateUrl https://gitea.slowb.ro/Davilarek/MessageLoggerV2-fixed/raw/branch/master/Plugins/MessageLoggerV2/MessageLoggerV2.plugin.js
  */
 /*@cc_on
 @if (@_jscript)
@@ -37,7 +37,7 @@ const MLV2_TYPE_L1 = Symbol('MLV2_TYPE_L1');
 const MLV2_TYPE_L2 = Symbol('MLV2_TYPE_L2');
 const MLV2_TYPE_L3 = Symbol('MLV2_TYPE_L3');
 
-const REPO_MAIN_URL = "https://gitea.slowb.ro/Davilarek/MessageLoggerV2-fixed/raw";
+const REPO_MAIN_URL = "https://gitea.slowb.ro/Davilarek/MessageLoggerV2-fixed/raw/branch";
 
 module.exports = class MessageLoggerV2 {
   getName() {
@@ -45,7 +45,7 @@ module.exports = class MessageLoggerV2 {
   }
   getVersion() {
 	// this.alreadyTestedForUpdate = false;
-    return '2.6.6.2.9';
+    return '2.6.6.2.99';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
