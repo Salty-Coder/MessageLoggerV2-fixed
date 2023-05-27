@@ -739,10 +739,10 @@ module.exports = class MessageLoggerV2 {
         }
       }
     };
-
+    let hiddenModule = ZeresPluginLibrary.WebpackModules.getByProps('spoilerText', 'hidden') ?? ZeresPluginLibrary.WebpackModules.getByProps('spoilerContent', 'hidden')
     this.classes = {
       markup: ZeresPluginLibrary.WebpackModules.getByProps('markup')['markup'].split(/ /g)[0],
-      hidden: ZeresPluginLibrary.WebpackModules.getByProps('spoilerText', 'hidden').hidden.split(/ /g)[0],
+      hidden: hiddenModule.hidden.split(/ /g)[0],
       messages: this.safeGetClass(
         () => `.${ZeresPluginLibrary.WebpackModules.getByProps('container', 'containerCompactBounded').container.split(/ /g)[0]} > div:not(.${ZeresPluginLibrary.WebpackModules.getByProps('content', 'marginCompactIndent').content.split(/ /g)[0]})`,
         this.safeGetClass(() => `.${XenoLib.getSingleClass('scroller messages')} > .${XenoLib.getSingleClass('channelTextArea message')}`, 'Lighty-youre-a-failure-my-fucking-god'),
