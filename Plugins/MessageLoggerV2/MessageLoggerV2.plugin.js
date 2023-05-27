@@ -45,7 +45,7 @@ module.exports = class MessageLoggerV2 {
   }
   getVersion() {
 	// this.alreadyTestedForUpdate = false;
-    return '2.6.6.2';
+    return '2.6.6.2.9';
   }
   getAuthor() {
     return 'Lighty, Davilarek';
